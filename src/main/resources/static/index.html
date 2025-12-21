@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QA Platform - Test Case Library</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/material-icons.css">
+    <style>
+        :root {
+            --primary-color: #0052cc;
+            --primary-hover: #0065ff;
+            --success-color: #36b37e;
+            --success-bg: #e3fcef;
+            --danger-color: #ff5630;
+            --danger-bg: #ffebe6;
+            --warning-color: #ffab00;
+        }
+        body { font-family: 'Inter', sans-serif; background-color: #f4f5f7; }
+        .sidebar-link.active { background-color: #e6f0ff; color: var(--primary-color); position: relative; }
+        .sidebar-link.active::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background-color: var(--primary-color); border-radius: 0 4px 4px 0; }
+        .tab-link { transition: all 150ms ease; border-bottom-width: 2px; }
+        .tab-link.tab-active { color: var(--primary-color); border-color: var(--primary-color); font-weight: 600; }
+        .btn-primary { background-color: var(--primary-color); }
+        .btn-primary:hover { background-color: var(--primary-hover); }
+        .priority-high { background-color: var(--danger-bg); color: var(--danger-color); border: 1px solid var(--danger-color); }
+        .priority-medium { background-color: #fff4d9; color: var(--warning-color); border: 1px solid var(--warning-color); }
+        .priority-low { background-color: #ebf6ff; color: var(--primary-color); border: 1px solid var(--primary-color); }
+        .spinner { border: 4px solid rgba(255, 255, 255, 0.3); border-top: 4px solid white; border-radius: 50%; width: 16px; height: 16px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="min-h-screen antialiased">
+
+    <!-- Global Header (Top Navigation) -->
+    <header class="h-14 bg-white shadow-md border-b border-gray-200 sticky top-0 z-10 flex items-center justify-between px-4">
+        <div class="flex items-center space-x-4">
+            <div class="flex items-center cursor-pointer">
+                <svg class="w-6 h-6 text-indigo-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1v-3m-6.447-2.618a.5.5 0 010-.764L10.5 12l-1.947-2.618a.5.5 0 010-.764L10.5 6l-1.947-2.618a.5.5 0 010-.764L10.5 0l1.947 2.618a.5.5 0 010 .764L13.5 6l1.947 2.618a.5.5 0 010 .764L13.5 12l-1.947 2.618a.5.5 0 010 .764L13.5 18zM6 10H3a2 2 0 00-2 2v4a2 2 0 002 2h3m12-8h3a2 2 0 012 2v4a2 2 0 01-2 2h-3"></path></svg>
+                <span class="text-xl font-semibold text-gray-800">QA Platform</span>
+            </div>
+        </div>
+        <div class="flex items-center space-x-3">
+            <button class="text-gray-500 hover:bg-gray-100 p-2 rounded-full transition duration-150">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            </button>
+            <button class="text-gray-500 hover:bg-gray-100 p-2 rounded-full transition duration-150">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+            </button>
+            <button class="w-8 h-8 rounded-full bg-blue-500 text-white font-medium text-sm flex items-center justify-center">NK</button>
+        </div>
+    </header>
+
+    <!-- Main Content Layout -->
+    <div class="flex">
+        <!-- Left Sidebar (Navigation) -->
+        <aside class="w-56 bg-white flex-shrink-0 border-r border-gray-200 pt-6 h-[calc(100vh-3.5rem)] sticky top-14">
+            <nav class="space-y-1">
+                <a href="#" id="nav-test-cases" class="sidebar-link active flex items-center px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition duration-150" data-content="unified-test-cases-content">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    <span>Test Cases</span>
+                </a>
+                <a href="#" id="nav-jira-integration" class="sidebar-link flex items-center px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 transition duration-150" data-content="jira-integration-content">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    <span>Jira Integration</span>
+                </a>
+                <div class="px-4 pt-4 text-xs font-semibold uppercase text-gray-400">Reports</div>
+                <a href="#" id="nav-reports" class="sidebar-link flex items-center px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 transition duration-150" data-content="reports-content">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m-4-5v5m-4-2v2m-2-1h10a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2v-4a2 2 0 012-2z"></path></svg>
+                    <span>Execution Summary</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Page Content Area -->
+        <main class="flex-grow p-8">
+            <!-- 1. Unified Test Cases Content -->
+            <div id="unified-test-cases-content" class="content-pane">
+                <div class="mb-6">
+                    <h1 class="text-3xl font-bold text-gray-800">Test Cases</h1>
+                    <p class="text-gray-500 mt-1">Generate, view, and manage test cases across all modules.</p>
+                </div>
+                <div class="border-b border-gray-200 mb-6">
+                    <nav class="-mb-px flex space-x-8">
+                        <a href="#" id="tab-generate" class="tab-link py-2 px-1 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 text-sm font-medium" data-tab="generate">+ Generate</a>
+                        <a href="#" id="tab-library" class="tab-link py-2 px-1 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 text-sm font-medium" data-tab="library">Library</a>
+                    </nav>
+                </div>
+                <div id="tab-content-container">
+                    <div id="tab-generate-content">
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            <!-- File Upload Section -->
+                            <div class="lg:col-span-1">
+                                <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                                    <h3 class="text-sm font-semibold text-gray-700 mb-4">📄 Upload File</h3>
+                                    <div id="uploadArea" class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition duration-150">
+                                        <svg class="w-10 h-10 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                                        <p class="text-sm font-medium text-gray-700">Drag and drop your file here</p>
+                                        <p class="text-xs text-gray-500 mt-1">or click to browse</p>
+                                        <p class="text-xs text-gray-400 mt-2">PDF, DOCX, TXT, PPTX</p>
+                                        <input type="file" id="fileInput" accept=".pdf,.docx,.pptx,.txt" hidden>
+                                    </div>
+                                    <div id="uploadStatus" class="mt-3 text-sm text-gray-500"></div>
+                                </div>
+                            </div>
+
+                            <!-- Requirements & Metadata Section -->
+                            <div class="lg:col-span-2">
+                                <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                                    <h3 class="text-sm font-semibold text-gray-700 mb-4">✏️ Input Requirements</h3>
+                                    <form id="generate-form" class="space-y-4">
+                                        <div>
+                                            <label for="requirements" class="block text-sm font-medium text-gray-700 mb-2">Requirements & Acceptance Criteria</label>
+                                            <textarea id="requirements" rows="6" placeholder="Describe your requirements, feature specifications, or test scenarios here..." class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-3 border"></textarea>
+                                        </div>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div>
+                                                <label for="app-name" class="block text-sm font-medium text-gray-700 mb-1">Application</label>
+                                                <input type="text" id="app-name" placeholder="Enter Application...." class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border">
+                                            </div>
+                                            <div>
+                                                <label for="module-name" class="block text-sm font-medium text-gray-700 mb-1">Module</label>
+                                                <input type="text" id="module-name" placeholder="Enter Module..." class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border">
+                                            </div>
+                                        </div>
+                                        <button type="submit" id="generate-btn" class="btn-primary w-full text-white font-medium rounded-md shadow-sm transition duration-150 py-2">🚀 Generate Test Cases</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="tab-library-content" class="hidden">
+                        <div class="flex flex-col lg:flex-row gap-6">
+                            <div class="flex-grow">
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                                    <div class="bg-white p-4 rounded-lg shadow border border-gray-100 text-center">
+                                        <div class="text-3xl font-bold text-gray-800">0</div>
+                                        <div class="text-sm text-gray-500">Test Cases</div>
+                                    </div>
+                                    <div class="bg-white p-4 rounded-lg shadow border border-gray-100 text-center">
+                                        <div class="text-3xl font-bold text-gray-800">0</div>
+                                        <div class="text-sm text-gray-500">Applications</div>
+                                    </div>
+                                    <div class="bg-white p-4 rounded-lg shadow border border-gray-100 text-center">
+                                        <div class="text-3xl font-bold text-gray-800">0</div>
+                                        <div class="text-sm text-gray-500">Modules</div>
+                                    </div>
+                                    <div class="bg-white p-4 rounded-lg shadow border border-gray-100 text-center">
+                                        <div class="text-3xl font-bold text-gray-800">0</div>
+                                        <div class="text-sm text-gray-500">Tags</div>
+                                    </div>
+                                </div>
+                                <div class="bg-white p-4 rounded-lg shadow-md border border-gray-200 mb-6">
+                                    <h3 class="text-sm font-semibold text-gray-600 mb-3">Filter</h3>
+                                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                        <select id="filter-app" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"><option value="">All Applications</option></select>
+                                        <select id="filter-module" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"><option value="">All Modules</option></select>
+                                        <select id="filter-priority" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"><option value="">All Priority</option><option value="HIGH">HIGH</option><option value="MEDIUM">MEDIUM</option><option value="LOW">LOW</option></select>
+                                        <button id="apply-filter-btn" class="btn-primary text-white font-medium rounded-md shadow-sm transition duration-150 py-2">Apply</button>
+                                    </div>
+                                </div>
+                                <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                                    <div class="flex justify-between items-center mb-4">
+                                        <h2 class="text-lg font-semibold text-gray-800">Test Cases (0)</h2>
+                                        <button class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 transition duration-150">Export</button>
+                                    </div>
+                                    <div class="overflow-x-auto">
+                                        <table class="min-w-full divide-y divide-gray-200">
+                                            <thead>
+                                                <tr>
+                                                    <th class="py-3 px-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-10"><input type="checkbox" class="rounded text-indigo-600 focus:ring-indigo-500"></th>
+                                                    <th class="py-3 px-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                                                    <th class="py-3 px-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
+                                                    <th class="py-3 px-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">App</th>
+                                                    <th class="py-3 px-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Module</th>
+                                                    <th class="py-3 px-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Priority</th>
+                                                    <th class="py-3 px-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Steps</th>
+                                                    <th class="py-3 px-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="bg-white divide-y divide-gray-200 text-sm">
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="lg:w-72 flex-shrink-0 bg-white p-4 rounded-lg shadow-md border border-gray-200 h-fit sticky top-[4rem]">
+                                <h3 class="text-sm font-semibold text-gray-700 mb-4 flex items-center border-b pb-2"><svg class="w-4 h-4 mr-1 text-blue-600" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M12.316 3.193a1 1 0 10-.671-1.884L6 4.757l-.375 1.5.375 1.5 5.645 3.448a1 1 0 001.077-1.666L8.4 6.757l3.916-2.788zM14.625 15.5l-2-2a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414-1.414zM4 10a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1z" clip-rule="evenodd" fill-rule="evenodd"></path></svg>Code Generation</h3>
+                                <div class="text-center space-y-4">
+                                    <p class="text-3xl font-bold text-gray-800" id="selected-count">0</p>
+                                    <p class="text-sm text-gray-500">Selected Test Cases</p>
+                                    <select class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 mb-4"><option>Select Language...</option><option>Python (Pytest/Selenium)</option><option>Java (TestNG/Selenium)</option><option>JavaScript (Playwright)</option></select>
+                                    <button class="btn-primary w-full text-white font-medium rounded-md shadow-sm transition duration-150 py-2 disabled:bg-gray-400 disabled:cursor-not-allowed" disabled>Generate Code</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Jira Integration Content -->
+            <div id="jira-integration-content" class="content-pane hidden">
+                <div class="mb-6">
+                    <h1 class="text-3xl font-bold text-gray-800">Jira Integration</h1>
+                    <p class="text-gray-500 mt-1">Connect your QA Platform to Jira to sync test cases, report bugs, and track status.</p>
+                </div>
+                <div id="jira-notification" class="hidden mb-4 p-3 rounded-md transition duration-300 ease-in-out"></div>
+                <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200 mb-8">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Connection Status</h2>
+                    <div id="connection-status" class="flex items-center space-x-3 p-3 bg-red-50 border border-red-200 rounded-md">
+                        <svg id="status-icon" class="w-6 h-6 text-red-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>
+                        <p id="status-message" class="text-sm text-red-700">Not Connected. Please enter your Jira credentials below.</p>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-6">Jira Server Configuration</h2>
+                    <form id="jira-config-form" class="space-y-6">
+                        <div>
+                            <label for="jira-url" class="block text-sm font-medium text-gray-700">Jira Server URL</label>
+                            <input type="url" id="jira-url" value="https://qa-company.atlassian.net" placeholder="e.g., https://yourcompany.atlassian.net" class="p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm transition duration-150">
+                            <p class="mt-2 text-xs text-gray-500">Provide the base URL for your Jira instance (Cloud or Server).</p>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="jira-email" class="block text-sm font-medium text-gray-700">Email (Jira Username)</label>
+                                <input type="email" id="jira-email" value="user@company.com" placeholder="your.name@company.com" class="p-2 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm transition duration-150">
+                            </div>
+                            <div>
+                                <label for="jira-token" class="block text-sm font-medium text-gray-700">API Token</label>
+                                <input type="password" id="jira-token" value="sk_1a2b3c4d5e6f7g8h9i0j" placeholder="Paste your generated API Token here" class="p-2 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm transition duration-150">
+                                <p class="mt-2 text-xs text-gray-500">Generate a token in Jira's Account Security settings for better security than a password.</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="jira-project" class="block text-sm font-medium text-gray-700">Default Jira Project Key</label>
+                                <input type="text" id="jira-project" value="QA" placeholder="e.g., QA, PROJ" class="p-2 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm transition duration-150">
+                            </div>
+                            <div>
+                                <label for="jira-issue-type" class="block text-sm font-medium text-gray-700">Default Test Case Issue Type</label>
+                                <select id="jira-issue-type" class="p-2 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm transition duration-150"><option>Story</option><option>Task</option><option>Bug</option><option selected>Test Case (Custom)</option></select>
+                            </div>
+                        </div>
+                        <div class="pt-6 flex justify-end">
+                            <button type="submit" id="connect-jira-btn" class="btn-primary flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150">
+                                <span id="button-text">Connect to Jira</span>
+                                <div id="button-spinner" class="spinner ml-2 hidden"></div>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- 3. Reports Content -->
+            <div id="reports-content" class="content-pane hidden">
+                <div class="mb-6">
+                    <h1 class="text-3xl font-bold text-gray-800">Execution Summary</h1>
+                    <p class="text-gray-500 mt-1">View the history and performance metrics for all test runs.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                    <p class="text-gray-500">Reports content coming soon...</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Core Scripts -->
+    <script src="js/export-utils.js"></script>
+    <script src="js/components/code-viewer.js"></script>
+    <script src="js/components/unified-test-cases.js"></script>
+    <script src="js/services/api.service.js"></script>
+    <script src="js/jira-app.js"></script>
+
+    <!-- Test Case Modal -->
+    <div id="testCaseModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.5); z-index: 1000; overflow-y: auto;">
+        <div style="background-color: white; margin: 2rem auto; max-width: 600px; border-radius: 8px; padding: 2rem; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h2 id="modalTitle" style="font-size: 1.5rem; font-weight: bold; color: #1f2937;"></h2>
+                <button onclick="document.getElementById('testCaseModal').style.display='none'" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #6b7280;">&times;</button>
+            </div>
+            <div id="modalContent" style="color: #374151; line-height: 1.6;"></div>
+        </div>
+    </div>
+
+    <script>
+        let allTestCases = [];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const sidebarLinks = document.querySelectorAll('.sidebar-link');
+            const contentPanes = document.querySelectorAll('.content-pane');
+            const tabLinks = document.querySelectorAll('.tab-link');
+            const tabContent = { 'generate': document.getElementById('tab-generate-content'), 'library': document.getElementById('tab-library-content') };
+
+            function showContent(contentId) {
+                contentPanes.forEach(pane => pane.classList.add('hidden'));
+                const selectedPane = document.getElementById(contentId);
+                if (selectedPane) selectedPane.classList.remove('hidden');
+                if (contentId === 'unified-test-cases-content') {
+                    loadTestCases();
+                }
+            }
+
+            function setActiveLink(activeLink) {
+                sidebarLinks.forEach(link => {
+                    link.classList.remove('active', 'text-gray-700');
+                    link.classList.add('text-gray-500');
+                });
+                activeLink.classList.add('active', 'text-gray-700');
+                activeLink.classList.remove('text-gray-500');
+            }
+
+            function switchTestCasesTab(tabId) {
+                tabLinks.forEach(link => link.classList.remove('tab-active'));
+                Object.values(tabContent).forEach(content => content.classList.add('hidden'));
+                const activeTabLink = document.querySelector(`.tab-link[data-tab="${tabId}"]`);
+                if (activeTabLink) activeTabLink.classList.add('tab-active');
+                const activeContent = tabContent[tabId];
+                if (activeContent) activeContent.classList.remove('hidden');
+                if (tabId === 'library') {
+                    loadTestCases();
+                }
+            }
+
+            async function loadTestCases() {
+                try {
+                    const response = await fetch('/api/v1/testcases');
+                    if (response.ok) {
+                        const data = await response.json();
+                        // Handle both array and wrapped response
+                        allTestCases = Array.isArray(data) ? data : (data.testCases || []);
+                        updateTestCaseTable(allTestCases);
+                        updateMetrics(allTestCases);
+                    } else {
+                        console.error('Failed to load test cases:', response.status);
+                    }
+                } catch (error) {
+                    console.error('Error loading test cases:', error);
+                }
+            }
+
+            function updateTestCaseTable(testCases) {
+                const tbody = document.querySelector('#tab-library-content tbody');
+                if (!tbody) return;
+                tbody.innerHTML = '';
+                
+                if (testCases.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 2rem; color: #999;">No test cases found. Generate some test cases to get started!</td></tr>';
+                    return;
+                }
+                
+                testCases.forEach(tc => {
+                    const row = document.createElement('tr');
+                    const priorityClass = tc.priority?.toUpperCase() === 'HIGH' ? 'priority-high' : tc.priority?.toUpperCase() === 'MEDIUM' ? 'priority-medium' : 'priority-low';
+                    row.innerHTML = `
+                        <td class="py-3 px-2 whitespace-nowrap"><input type="checkbox" class="rounded text-indigo-600 focus:ring-indigo-500"></td>
+                        <td class="py-3 px-2 whitespace-nowrap text-blue-600 font-medium cursor-pointer hover:underline" onclick="showTestCaseModal(${tc.id})">${tc.testCaseId || 'TC' + tc.id}</td>
+                        <td class="py-3 px-2 whitespace-nowrap">${tc.title || ''}</td>
+                        <td class="py-3 px-2 whitespace-nowrap text-gray-600">${tc.appName || 'N/A'}</td>
+                        <td class="py-3 px-2 whitespace-nowrap text-gray-600">${tc.module || 'N/A'}</td>
+                        <td class="py-3 px-2 whitespace-nowrap"><span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${priorityClass}">${tc.priority || 'MEDIUM'}</span></td>
+                        <td class="py-3 px-2 whitespace-nowrap">${tc.steps?.length || 0}</td>
+                        <td class="py-3 px-2 whitespace-nowrap text-right"><button class="text-sm font-medium text-blue-600 hover:text-blue-800" onclick="showTestCaseModal(${tc.id})">View</button></td>
+                    `;
+                    tbody.appendChild(row);
+                });
+                attachCheckboxListeners();
+            }
+
+            function updateMetrics(testCases) {
+                const apps = new Set(testCases.map(tc => tc.appName)).size;
+                const modules = new Set(testCases.map(tc => tc.module)).size;
+                const tags = new Set(testCases.flatMap(tc => (tc.tags || []))).size;
+                
+                const metricsContainer = document.querySelector('#tab-library-content .grid-cols-2');
+                if (metricsContainer) {
+                    const cards = metricsContainer.querySelectorAll('div');
+                    if (cards[0]) cards[0].querySelector('div:first-child').textContent = testCases.length;
+                    if (cards[1]) cards[1].querySelector('div:first-child').textContent = apps || '0';
+                    if (cards[2]) cards[2].querySelector('div:first-child').textContent = modules || '0';
+                    if (cards[3]) cards[3].querySelector('div:first-child').textContent = tags || '0';
+                }
+                
+                // Populate filter dropdowns
+                const appOptions = [...new Set(allTestCases.map(tc => tc.appName).filter(Boolean))];
+                const moduleOptions = [...new Set(allTestCases.map(tc => tc.module).filter(Boolean))];
+                
+                const appSelect = document.getElementById('filter-app');
+                const moduleSelect = document.getElementById('filter-module');
+                
+                if (appSelect) {
+                    const currentValue = appSelect.value;
+                    appSelect.innerHTML = '<option value="">All Applications</option>';
+                    appOptions.forEach(app => {
+                        const option = document.createElement('option');
+                        option.value = app;
+                        option.textContent = app;
+                        appSelect.appendChild(option);
+                    });
+                    appSelect.value = currentValue;
+                }
+                
+                if (moduleSelect) {
+                    const currentValue = moduleSelect.value;
+                    moduleSelect.innerHTML = '<option value="">All Modules</option>';
+                    moduleOptions.forEach(mod => {
+                        const option = document.createElement('option');
+                        option.value = mod;
+                        option.textContent = mod;
+                        moduleSelect.appendChild(option);
+                    });
+                    moduleSelect.value = currentValue;
+                }
+                
+                // Update test cases count in table header
+                const tableHeader = document.querySelector('#tab-library-content h2');
+                if (tableHeader) {
+                    tableHeader.textContent = `Test Cases (${testCases.length})`;
+                }
+            }
+
+            function attachCheckboxListeners() {
+                const table = document.querySelector('.min-w-full');
+                const selectedCount = document.getElementById('selected-count');
+                const generateCodeButton = document.querySelector('.lg\\:w-72 button');
+                if (table) {
+                    const checkboxes = table.querySelectorAll('input[type="checkbox"]');
+                    checkboxes.forEach(checkbox => {
+                        checkbox.addEventListener('change', () => {
+                            let count = document.querySelectorAll('#tab-library-content tbody input[type="checkbox"]:checked').length;
+                            selectedCount.textContent = count;
+                            if (count > 0) {
+                                generateCodeButton.disabled = false;
+                                generateCodeButton.classList.remove('disabled:bg-gray-400', 'disabled:cursor-not-allowed');
+                            } else {
+                                generateCodeButton.disabled = true;
+                                generateCodeButton.classList.add('disabled:bg-gray-400', 'disabled:cursor-not-allowed');
+                            }
+                        });
+                    });
+                }
+            }
+
+            window.showTestCaseModal = function(testCaseId) {
+                const tc = allTestCases.find(t => t.id === testCaseId);
+                if (tc) {
+                    document.getElementById('modalTitle').textContent = tc.title || 'Test Case Details';
+                    document.getElementById('modalContent').innerHTML = `
+                        <p><strong>ID:</strong> ${tc.testCaseId || 'TC' + tc.id}</p>
+                        <p><strong>Application:</strong> ${tc.appName || tc.application || 'N/A'}</p>
+                        <p><strong>Module:</strong> ${tc.module || 'N/A'}</p>
+                        <p><strong>Priority:</strong> ${tc.priority || 'MEDIUM'}</p>
+                        <p><strong>Status:</strong> ${tc.status || 'ACTIVE'}</p>
+                        <p><strong>Description:</strong></p>
+                        <p>${tc.description || 'No description'}</p>
+                        <p><strong>Pre-conditions:</strong></p>
+                        <p>${tc.preconditions || 'None'}</p>
+                        <p><strong>Steps:</strong></p>
+                        <ol style="margin-left: 1.5rem;">
+                            ${(tc.steps || []).map(step => {
+                                if (typeof step === 'object') {
+                                    return `<li><strong>Step ${step.stepNumber}:</strong> ${step.action}<br><em>Expected: ${step.expectedResult}</em></li>`;
+                                } else {
+                                    return `<li>${step}</li>`;
+                                }
+                            }).join('')}
+                        </ol>
+                        <p><strong>Tags:</strong> ${(tc.tags || []).join(', ') || 'None'}</p>
+                    `;
+                    document.getElementById('testCaseModal').style.display = 'block';
+                }
+            };
+
+            window.showGenerationSummary = function(response) {
+                if (!response.testCases || response.testCases.length === 0) return;
+                const testCases = response.testCases;
+                let html = `<strong>✓ Successfully generated ${testCases.length} test cases!</strong><br><br>`;
+                html += `<div style="max-height: 400px; overflow-y: auto;">`;
+                testCases.forEach((tc, idx) => {
+                    html += `<div style="margin-bottom: 1rem; padding: 1rem; background-color: #f5f5f5; border-radius: 4px;">
+                        <strong>${idx + 1}. ${tc.title}</strong><br>
+                        <small style="color: #666;">Priority: ${tc.priority} | Steps: ${(tc.steps || []).length}</small><br>
+                        <small>${tc.description || ''}</small>
+                    </div>`;
+                });
+                html += `</div>`;
+                document.getElementById('modalContent').innerHTML = html;
+                document.getElementById('modalTitle').textContent = 'Generation Summary';
+                document.getElementById('testCaseModal').style.display = 'block';
+            };
+
+            // File Upload Handler
+            const uploadArea = document.getElementById('uploadArea');
+            const fileInput = document.getElementById('fileInput');
+            
+            if (uploadArea && fileInput) {
+                // Click to upload
+                uploadArea.addEventListener('click', () => fileInput.click());
+                
+                // Drag and drop
+                uploadArea.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    uploadArea.style.borderColor = '#0052cc';
+                    uploadArea.style.backgroundColor = '#e6f0ff';
+                });
+                
+                uploadArea.addEventListener('dragleave', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    uploadArea.style.borderColor = '#d1d5db';
+                    uploadArea.style.backgroundColor = '#f3f4f6';
+                });
+                
+                uploadArea.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    uploadArea.style.borderColor = '#d1d5db';
+                    uploadArea.style.backgroundColor = 'transparent';
+                    
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0) {
+                        handleFileUpload(files[0]);
+                    }
+                });
+                
+                fileInput.addEventListener('change', (e) => {
+                    if (e.target.files.length > 0) {
+                        handleFileUpload(e.target.files[0]);
+                    }
+                });
+            }
+
+            async function handleFileUpload(file) {
+                const uploadStatus = document.getElementById('uploadStatus');
+                uploadStatus.textContent = 'Uploading: ' + file.name;
+                uploadStatus.style.color = '#0052cc';
+                
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                try {
+                    const response = await fetch('/api/v1/files/extract', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    if (response.ok) {
+                        const result = await response.json();
+                        const requirementsField = document.getElementById('requirements');
+                        if (requirementsField) {
+                            requirementsField.value = result.text || result.extractedText || '';
+                        }
+                        uploadStatus.textContent = '✓ File uploaded successfully!';
+                        uploadStatus.style.color = '#36b37e';
+                    } else {
+                        uploadStatus.textContent = 'Error uploading file';
+                        uploadStatus.style.color = '#ff5630';
+                    }
+                } catch (error) {
+                    console.error('Error uploading file:', error);
+                    uploadStatus.textContent = 'Error: ' + error.message;
+                    uploadStatus.style.color = '#ff5630';
+                }
+            }
+
+            // Generate Test Cases Handler
+            const generateForm = document.getElementById('generate-form');
+            if (generateForm) {
+                generateForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const requirements = document.getElementById('requirements').value;
+                    const appName = document.getElementById('app-name').value;
+                    const moduleName = document.getElementById('module-name').value;
+
+                    if (!requirements) {
+                        alert('Please enter requirements or upload a file');
+                        return;
+                    }
+
+                    const button = generateForm.querySelector('button');
+                    button.disabled = true;
+                    button.textContent = '⏳ Generating...';
+
+                    try {
+                        const response = await fetch('/api/v1/agents/testcases/generate', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                text: requirements,
+                                context: {
+                                    appName: appName || 'Unknown',
+                                    module: moduleName || 'Unknown'
+                                }
+                            })
+                        });
+
+                        if (response.ok) {
+                            const result = await response.json();
+                            console.log('Generated response:', result);
+                            alert('Test cases generated successfully!');
+                            // Show generated test cases in modal
+                            if (result.testCases && result.testCases.length > 0) {
+                                showGenerationSummary(result);
+                            }
+                            generateForm.reset();
+                            // Reload and switch to library view
+                            setTimeout(() => {
+                                loadTestCases();
+                                switchTestCasesTab('library');
+                            }, 500);
+                        } else {
+                            const error = await response.text();
+                            console.error('Error response:', error);
+                            alert('Error generating test cases: ' + error);
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        alert('Error generating test cases: ' + error.message);
+                    } finally {
+                        button.disabled = false;
+                        button.textContent = '🚀 Generate Test Cases';
+                    }
+                });
+            }
+
+            // Filter Handler
+            const applyFilterBtn = document.getElementById('apply-filter-btn');
+            if (applyFilterBtn) {
+                applyFilterBtn.addEventListener('click', () => {
+                    const appValue = document.getElementById('filter-app').value;
+                    const moduleValue = document.getElementById('filter-module').value;
+                    const priorityValue = document.getElementById('filter-priority').value;
+                    
+                    let filtered = allTestCases;
+                    
+                    if (appValue) {
+                        filtered = filtered.filter(tc => tc.appName === appValue);
+                    }
+                    if (moduleValue) {
+                        filtered = filtered.filter(tc => tc.module === moduleValue);
+                    }
+                    if (priorityValue) {
+                        filtered = filtered.filter(tc => tc.priority === priorityValue);
+                    }
+                    
+                    updateTestCaseTable(filtered);
+                    updateMetrics(filtered);
+                });
+            }
+
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const contentId = link.getAttribute('data-content');
+                    if (contentId) {
+                        setActiveLink(link);
+                        showContent(contentId);
+                        if (contentId === 'unified-test-cases-content') switchTestCasesTab('generate');
+                    }
+                });
+            });
+
+            tabLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const tabId = link.getAttribute('data-tab');
+                    switchTestCasesTab(tabId);
+                });
+            });
+
+            const defaultSidebarLink = document.querySelector('#nav-test-cases');
+            if (defaultSidebarLink) {
+                showContent(defaultSidebarLink.getAttribute('data-content'));
+                switchTestCasesTab('generate');
+                loadTestCases();
+            }
+
+            attachCheckboxListeners();
+        });
+    </script>
+
+</body>
+</html>

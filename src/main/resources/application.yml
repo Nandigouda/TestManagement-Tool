@@ -1,0 +1,66 @@
+spring:
+  application:
+    name: qa-automation-platform
+  main:
+    web-application-type: servlet
+  web:
+    resources:
+      cache:
+        period: 0
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        format_sql: true
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: true
+
+server:
+  port: 8081
+  address: 0.0.0.0
+  servlet:
+    context-path: /api/v1
+
+logging:
+  level:
+    root: INFO
+    com.qaautomation: DEBUG
+    org.springframework.boot: INFO
+    org.springframework.web: DEBUG
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+# External API Configuration
+external-apis:
+  openai:
+    api-key: ${OPENAI_API_KEY:sk-test-key}
+    model: gpt-4
+    temperature: 0.3
+    max-tokens: 2000
+  azure-openai:
+    enabled: true
+    api-key: d06eb40c833a49a4829f079d1ddbfc14
+    endpoint: https://usa-decision-azureai-openai.openai.azure.com
+    deployment: gpt4-turbo
+    api-version: 2024-02-15-preview
+  jira:
+    api-token: ${JIRA_API_TOKEN:}
+    base-url: ${JIRA_BASE_URL:https://your-domain.atlassian.net}
+  ocr:
+    enabled: false
+
+# File Upload Configuration
+file-upload:
+  max-size: 52428800 # 50MB
+  temp-dir: ./temp-files
+  supported-formats: pdf,docx,txt,doc,jpg,png,jpeg
+
