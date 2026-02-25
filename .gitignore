@@ -43,3 +43,6 @@ temp-files/
 application-local.yml
 application-dev.yml
 application-prod.yml
+
+# Local JDKs and tools (ignore local installations/binaries)
+tools/jdk17/
