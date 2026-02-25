@@ -1,13 +1,11 @@
 package com.qaautomation.models;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.util.List;
-
 /**
- * DTO for API responses containing generated code artifacts.
+ * Response DTO for API responses containing generated automation code.
  */
 @Data
 @NoArgsConstructor
@@ -18,7 +16,6 @@ public class CodeGenerationResponse {
     private String status;
     private CodeArtifactDto artifact;
     private String timestamp;
-
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
@@ -30,7 +27,6 @@ public class CodeGenerationResponse {
         private Double confidence;
         private Boolean requiresHumanReview;
         private String notes;
-
         @Data
         @NoArgsConstructor
         @AllArgsConstructor

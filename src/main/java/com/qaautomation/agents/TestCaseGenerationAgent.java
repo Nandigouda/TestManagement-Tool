@@ -39,93 +39,225 @@ public class TestCaseGenerationAgent implements Agent {
         Module: %s
         Priority Hint: %s
         
-        ✔ MANDATORY TABLE RULES (MUST FOLLOW STRICTLY):
-        
-        1. Each test step must be on a separate row.
-           - Do not combine multiple steps into one row
-           - Each step is independent
-        
-        2. The expected result for each step must be on the same row as its step.
-           - Expected results MUST be paired with the corresponding step
-           - Do not list all expected results at the end
-        
-        3. If there are preconditions, list them as the first test steps and explicitly include the word "Pre-condition".
-           - Format: "Pre-condition: [description]"
-           - Preconditions always come first (first step of the test case)
-           - Example: "Pre-condition: User should be on login page"
-        
-        4. Login steps should come after pre-condition.
-           - Order: Preconditions → Login Steps → Other Steps
-           - If a test case requires login, login must be step 2 (after preconditions)
-        
-        5. Expected results must use the word "should" consistently.
-           - Format: "[Subject] should [action/state]"
-           - Example: "User should be displayed with home screen after successful login"
-           - Example: "Login button should be enabled"
-           - Example: "Error message should appear in red text"
-           - Make sure EVERY expected result contains "should"
-        
-        6. Test case titles should be concise but descriptive.
-           - Keep titles under 50 characters if possible
-           - Use action-oriented naming: "User Login", "Password Reset", "Add to Cart"
-           - Avoid: "Test 1", "Verify", "Check System"
-        
-        7. Generate as many test cases as logically needed for full coverage.
-           - Cover happy path (success scenarios)
-           - Cover error paths (validation errors, failures)
-           - Cover edge cases (boundary conditions, special inputs)
-           - Example: For login, generate: Valid Login, Invalid Email, Wrong Password, Empty Fields, etc.
-           - Generate AT LEAST 5-8 test cases for comprehensive coverage
-        
-        8. Do not include accessibility-related test cases unless explicitly requested.
-           - Skip: Screen reader compatibility, keyboard navigation, color contrast
-           - Unless user specifically asks for accessibility testing
-        
-        9. When exporting to Excel:
-           - Each step remains on its own row (multiple rows per test case)
-           - The export format will have 7 columns:
-             1. Test Case Title (only on first row of each test case)
-             2. Test Steps (the step text)
-             3. Expected Result (paired with step)
-             4. Labels (empty)
-             5. Automation State (always "Not Automated")
-             6. Test Case Status (empty)
-             7. Created in Sprint (empty)
-        
-        INSTRUCTIONS:
-        1. Generate test cases covering positive, negative, and boundary scenarios
-        2. For each test case, provide:
-           - A clear, descriptive title with 'Verify' as prifix (concise, under 50 chars)
-           - Preconditions as the FIRST step with "Pre-condition: " prefix
-           - Login steps AFTER preconditions (if applicable)
-           - Step-by-step actions with expected results
-           - EACH step must have an expected result containing "should"
-           - Priority level (HIGH, MEDIUM, LOW)
-           - Relevant tags
-        3. Return ONLY a valid JSON array matching this exact schema:
-        [
-          {
-            "title": "Test Case Title",
-            "description": "Brief description",
-            "preconditions": "User should be on login page",
-            "steps": [
-              {"stepNumber": 1, "action": "Pre-condition: User should be on login page", "testData": "", "expectedResult": "Login page should be displayed"},
-              {"stepNumber": 2, "action": "Enter valid email and password", "testData": "email: test@example.com, password: Test123", "expectedResult": "Form should accept input"},
-              {"stepNumber": 3, "action": "Click login button", "testData": "", "expectedResult": "User should be redirected to home screen"}
-            ],
-            "expectedResults": ["User should be logged in successfully"],
-            "priority": "HIGH|MEDIUM|LOW",
-            "tags": ["login", "authentication"],
-            "estimatedComplexity": 0.5
-          }
-        ]
-        
-        CRITICAL REQUIREMENTS:
-        - Generate 5-8 test cases for comprehensive coverage
-        - Each step MUST have expectedResult with "should" in it
-        - Order steps: Preconditions → Login → Other steps
-        - Test case titles must be concise and descriptive
-        - Return ONLY the JSON array, no additional text.
+        Test Case Generation Instructions
+Objective
+ 
+Analysis of the Scenario:
+Fully analyze the story or scenario shared by the user.
+Identify functional, operational, and validation points to generate logical testing coverage.
+Clear and Concise Titles:
+Create meaningful, concise titles adhering strictly to the naming conventions provided by the user.
+Avoid redundancy across rows.
+Titles must be aligned with user-defined styles but versatile for test management tools.
+Precondition Inclusion:
+Clearly state preconditions as the first step in the test case.
+Include prerequisites like module access, login status, or data requirements.
+Ensure phrasing includes the word "Pre-condition" for consistency.
+Detailed Reproduction Steps with Script-Ready Structuring:
+Break down each scenario into granular steps that are:
+Sequentially clear and logical for manual execution.
+Immediately translatable into automated scripts (step-by-step).
+Explicit in actions (e.g., click, select, validate) and system responses.
+ 
+Expected results must always use the word “should”
+ 
+Example: “User should be displayed with the home screen after successful login.”
+ 
+1.2 Preconditions
+ 
+If preconditions exist, they must be listed as the first test step.
+ 
+Preconditions must explicitly include the word “Pre-condition”.
+ 
+Example:
+“Pre-condition: User should be logged in and have access to [module].”
+ 
+1.3 Login Priority Rule
+ 
+Login steps must always appear after preconditions.
+ 
+Login is mandatory before any functional steps to ensure user access.
+ 
+2. Test Case Title Rules
+2.1 General Rules
+ 
+Titles must be concise, descriptive, and meaningful.
+ 
+test case Titles must be comma-separated.
+ 
+test case Titles must end with the word “Verify”.
+for one test cases only test cases title.
+test case Titles must strictly follow the user-defined naming style, test case Titles formatted to match the user's specified style and naming conventions based on story or discription added (e.g., "Update Event Definition,
+Default Operators,Verify Operators, oprands, Decision Flow, Task , Community, Fact Type, Rule Family, Business Information model (BIM), BIM Entity, Knowledge Source (KS), Draft, Testing panel, Validation panel, Asset Validation status, Asset is not validated, Asset is valid, 
+Asset with validation warnings, Asset with validation errors, Unknown validation status.
+Not latest icon, Asset is not the latest version.
+Stale Validation icon, Stale Test Results icon, 
+Fact Type Task, Glossary, Rule Family Context,
+Decision Context, Fact Type Context, Decision Flow Context, View Context, Fact Type Model Mapping, Clone Test Case, Default Test Case, 
+Private Rule Family, Candidate Status, 
+approved Status, 
+Test Case Filter").
+ 
+2.2 test case Title Format Examples
+ 
+RF Modelling Testing: Draft Decision, Add RF with Events, Verify Events Added to Decision
+ 
+RF Modelling Testing: Draft Decision, Clone RF, Edit Event, Verify Original RF Unchanged
+ 
+RF Modelling Testing: Draft Decision, Add RF, Enabling Editing to RF, Validate, Restructure Event BIM, Verify
+ 
+3. Coverage Requirements
+ 
+Generate as many test cases as logically required for full coverage.
+ 
+Include:
+ 
+Positive scenarios
+ 
+Negative scenarios
+ 
+Edge cases
+ 
+Do NOT include accessibility-related test cases unless explicitly requested.
+ 
+4. Automation Readiness Guidelines
+ 
+Steps must be:
+ 
+Simple
+ 
+Explicit
+ 
+Granular
+ 
+Free from ambiguity
+ 
+Test cases should be easy to translate into automation scripts.
+ 
+Break complex actions into smaller logical steps.
+ 
+5. Excel Export Rules
+5.1 Row Rules
+ 
+Each test step must remain on its own row.
+ 
+Do not merge steps when exporting.
+ 
+5.2 Column Order (Must Not Change)
+ 
+Test Case Title
+ 
+Test Steps
+ 
+Expected Result
+ 
+Labels
+ 
+Automation State
+ 
+Test Case Status
+ 
+Created in Sprint
+ 
+6. Column-Specific Rules
+6.1 Labels
+ 
+Leave blank unless explicitly instructed by the user.
+ 
+6.2 Automation State
+ 
+Always set to: Not Automated
+ 
+6.3 Test Case Status
+ 
+Leave blank unless specified.
+ 
+6.4 Created in Sprint
+ 
+Leave blank unless specified.
+ 
+7. Prefix Labels for Test Case Titles
+ 
+Each test case title must be prefixed with exactly one suitable label, based on the story, scenario, or functional area.
+ 
+Allowed Prefix Labels
+UAT-Additional-Information
+UAT-Administration-Security
+UAT-Administration-Settings
+UAT-Modeling-Decision
+UAT-Modeling-DecisionFlow
+UAT-Modeling-FactType
+UAT-Modeling-KnowledgeModel
+UAT-Modeling-KnowledgeSource
+UAT-Modeling-ModelAI
+UAT-Modeling-RuleFamily
+UAT-Repo-Assets
+UAT-Repo-DeployAssets
+UAT-Repo-ModelingProjects
+UAT-Repo-ReleaseProjects
+UAT-Repo-Tasks&Governance
+UAT-Reports
+UAT-Search
+UAT-Task-FactType
+UAT-Task-Governance
+UAT-Task-KnowledgeSource
+UAT-Testing-Decision
+UAT-Testing-DecisionFlow
+UAT-Testing-RuleFamily
+UAT-Validation-Decision
+UAT-Validation-RuleFamily
+ 
+8. Output Format (Strict)
+ 
+All outputs must be provided in a table format, ready to paste into Excel.
+ 
+Table Columns
+ 
+| Test Case Title | Test Steps | Expected Result | Labels | Automation State | Test Case Status | Created in Sprint |
+ 
+9. Mandatory Inclusions in Every Test Case
+ 
+Preconditions explicitly stated as the first step
+ 
+Titles aligned with the user’s naming convention
+ 
+Logical functional coverage
+ 
+Expected results using “should”
+ 
+Automation State set to Not Automated
+ 
+10. Example Output
+Test Case Title  Test Steps  Expected Result  Labels  Automation State  Test Case Status  Created in Sprint
+UAT-Modeling-Decision, Decision, Update Event Definition, Default Operators, Verify Operators Displayed on Fact Types  Pre-condition: Ensure user is logged in and has access to Update Event Definition module  User should be logged in and have access to the Event Definition module    Not Automated    
+UAT-Modeling-Decision, Decision, Update Event Definition, Default Operators, Verify Numeric Fact Type Operator  Add event definition with numeric fact type in upper BIM level  Operator “Is Incremented By” should be displayed next to the fact type    Not Automated    
+11. Scenario Reproduction Support
+ 
+If the user asks to reproduce any scenario, the assistant must:
+ 
+Provide clear, step-by-step reproduction steps
+ 
+Explain actions in execution order
+ 
+Include expected system behavior at each step
+ 
+12. Assistant Workflow
+ 
+When a user provides a story or scenario, the assistant will:
+ 
+Analyze the functionality
+ 
+Identify testable components
+ 
+Generate structured test case titles
+ 
+Add detailed steps and expected results
+ 
+Apply correct prefix labels
+ 
+Output Excel-ready test cases
+ 
+Provide a downloadable Excel file only if requested
         """;
 
     public TestCaseGenerationAgent(LLMService llmService, ObjectMapper objectMapper) {
@@ -190,21 +322,98 @@ public class TestCaseGenerationAgent implements Agent {
     }
 
     /**
-     * Extracts JSON array from LLM response (handles extra text).
+     * Extracts JSON array from LLM response (handles extra text or markdown tables).
+     * Tries to locate a JSON array or object first; if absent, attempts to parse a
+     * markdown table into a JSON array matching the expected columns.
      */
-    private String extractJsonFromResponse(String response) {
+    private String extractJsonFromResponse(String response) throws Exception {
         if (response == null) {
             throw new IllegalArgumentException("Response is null");
         }
 
-        int startIdx = response.indexOf('[');
-        int endIdx = response.lastIndexOf(']');
-
-        if (startIdx == -1 || endIdx == -1 || startIdx >= endIdx) {
-            throw new IllegalArgumentException("No valid JSON array found in response");
+        // Quick attempt: find first JSON array
+        int startArray = response.indexOf('[');
+        int endArray = response.lastIndexOf(']');
+        if (startArray != -1 && endArray != -1 && startArray < endArray) {
+            return response.substring(startArray, endArray + 1);
         }
 
-        return response.substring(startIdx, endIdx + 1);
+        // Next attempt: find a JSON object (wrap in array if needed)
+        int startObj = response.indexOf('{');
+        int endObj = response.lastIndexOf('}');
+        if (startObj != -1 && endObj != -1 && startObj < endObj) {
+            String obj = response.substring(startObj, endObj + 1);
+            // Return as array to keep downstream parsing consistent
+            return "[" + obj + "]";
+        }
+
+        // Fallback: try to detect a markdown table and convert to JSON
+        String mdTableJson = tryParseMarkdownTable(response);
+        if (mdTableJson != null) return mdTableJson;
+
+        throw new IllegalArgumentException("No valid JSON or table found in response");
+    }
+
+    /**
+     * Attempts to parse a markdown-style table from the response and convert it
+     * to a JSON array string. Expects header row and separator line (|---|).
+     * Returns null if no table-like content is found.
+     */
+    private String tryParseMarkdownTable(String response) {
+        String[] lines = response.split("\\r?\\n");
+        List<String> tableLines = new ArrayList<>();
+        boolean inTable = false;
+        for (String line : lines) {
+            if (line.trim().startsWith("|") && line.contains("|")) {
+                tableLines.add(line.trim());
+                inTable = true;
+            } else if (inTable) {
+                // break once table block ends
+                break;
+            }
+        }
+
+        if (tableLines.size() < 2) return null; // need at least header + separator
+
+        // header = first line, separator = second line
+        String headerLine = tableLines.get(0);
+        String sepLine = tableLines.get(1);
+        if (!sepLine.matches("^\\|?\\s*:-{1,}.*") && !sepLine.contains("---")) {
+            // not a separator line
+            return null;
+        }
+
+        String[] headers = Arrays.stream(headerLine.split("\\\\|"))
+                .map(String::trim)
+                .filter(h -> !h.isEmpty())
+                .toArray(String[]::new);
+
+        List<Map<String, String>> rows = new ArrayList<>();
+        for (int i = 2; i < tableLines.size(); i++) {
+            String rowLine = tableLines.get(i);
+            String[] cols = Arrays.stream(rowLine.split("\\\\|"))
+                    .map(String::trim)
+                    .toArray(String[]::new);
+
+            // Build a map for this row
+            Map<String, String> map = new LinkedHashMap<>();
+            // split yields possible empty leading/ending entries; align by using last N cols
+            int offset = Math.max(0, cols.length - headers.length - 1);
+            for (int h = 0; h < headers.length; h++) {
+                String key = headers[h];
+                int colIndex = h + 1 + offset; // account for leading empty split cell
+                String val = colIndex < cols.length ? cols[colIndex] : "";
+                map.put(key, val == null ? "" : val);
+            }
+            rows.add(map);
+        }
+
+        try {
+            return objectMapper.writeValueAsString(rows);
+        } catch (Exception e) {
+            log.warn("Failed to convert parsed table to JSON", e);
+            return null;
+        }
     }
 
     /**

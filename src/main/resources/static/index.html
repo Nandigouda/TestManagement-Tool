@@ -78,11 +78,8 @@
         <main class="flex-grow p-8">
             <!-- 1. Unified Test Cases Content -->
             <div id="unified-test-cases-content" class="content-pane">
-                <div class="mb-6">
-                    <h1 class="text-3xl font-bold text-gray-800">Test Cases</h1>
-                    <p class="text-gray-500 mt-1">Generate, view, and manage test cases across all modules.</p>
-                </div>
-                <div class="border-b border-gray-200 mb-6">
+                <!-- Header removed per request -->
+                <div class="border-b border-gray-200">
                     <nav class="-mb-px flex space-x-8">
                         <a href="#" id="tab-generate" class="tab-link py-2 px-1 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 text-sm font-medium" data-tab="generate">+ Generate</a>
                         <a href="#" id="tab-library" class="tab-link py-2 px-1 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 text-sm font-medium" data-tab="library">Library</a>
@@ -115,16 +112,7 @@
                                             <label for="requirements" class="block text-sm font-medium text-gray-700 mb-2">Requirements & Acceptance Criteria</label>
                                             <textarea id="requirements" rows="6" placeholder="Describe your requirements, feature specifications, or test scenarios here..." class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-3 border"></textarea>
                                         </div>
-                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            <div>
-                                                <label for="app-name" class="block text-sm font-medium text-gray-700 mb-1">Application</label>
-                                                <input type="text" id="app-name" placeholder="Enter Application...." class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border">
-                                            </div>
-                                            <div>
-                                                <label for="module-name" class="block text-sm font-medium text-gray-700 mb-1">Module</label>
-                                                <input type="text" id="module-name" placeholder="Enter Module..." class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border">
-                                            </div>
-                                        </div>
+                                        <!-- Application and Module inputs removed per request -->
                                         <button type="submit" id="generate-btn" class="btn-primary w-full text-white font-medium rounded-md shadow-sm transition duration-150 py-2">🚀 Generate Test Cases</button>
                                     </form>
                                 </div>
@@ -134,7 +122,7 @@
                     <div id="tab-library-content" class="hidden">
                         <div class="flex flex-col lg:flex-row gap-6">
                             <div class="flex-grow">
-                                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                                     <div class="bg-white p-4 rounded-lg shadow border border-gray-100 text-center">
                                         <div class="text-3xl font-bold text-gray-800">0</div>
                                         <div class="text-sm text-gray-500">Test Cases</div>
@@ -152,15 +140,7 @@
                                         <div class="text-sm text-gray-500">Tags</div>
                                     </div>
                                 </div>
-                                <div class="bg-white p-4 rounded-lg shadow-md border border-gray-200 mb-6">
-                                    <h3 class="text-sm font-semibold text-gray-600 mb-3">Filter</h3>
-                                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                                        <select id="filter-app" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"><option value="">All Applications</option></select>
-                                        <select id="filter-module" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"><option value="">All Modules</option></select>
-                                        <select id="filter-priority" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"><option value="">All Priority</option><option value="HIGH">HIGH</option><option value="MEDIUM">MEDIUM</option><option value="LOW">LOW</option></select>
-                                        <button id="apply-filter-btn" class="btn-primary text-white font-medium rounded-md shadow-sm transition duration-150 py-2">Apply</button>
-                                    </div>
-                                </div>
+                                <!-- Filter functionality removed per request -->
                                 <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
                                     <div class="flex justify-between items-center mb-4">
                                         <h2 class="text-lg font-semibold text-gray-800">Test Cases (0)</h2>
@@ -171,12 +151,13 @@
                                             <thead>
                                                 <tr>
                                                     <th class="py-3 px-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-10"><input type="checkbox" class="rounded text-indigo-600 focus:ring-indigo-500"></th>
-                                                    <th class="py-3 px-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                                                    <th class="py-3 px-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
-                                                    <th class="py-3 px-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">App</th>
-                                                    <th class="py-3 px-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Module</th>
-                                                    <th class="py-3 px-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Priority</th>
-                                                    <th class="py-3 px-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Steps</th>
+                                                    <th class="py-3 px-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Test Case Title</th>
+                                                    <th class="py-3 px-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Test Steps</th>
+                                                    <th class="py-3 px-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Expected Result</th>
+                                                    <th class="py-3 px-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Labels</th>
+                                                    <th class="py-3 px-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Automation State</th>
+                                                    <th class="py-3 px-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Test Case Status</th>
+                                                    <th class="py-3 px-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created in Sprint</th>
                                                     <th class="py-3 px-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                                                 </tr>
                                             </thead>
@@ -186,15 +167,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="lg:w-72 flex-shrink-0 bg-white p-4 rounded-lg shadow-md border border-gray-200 h-fit sticky top-[4rem]">
-                                <h3 class="text-sm font-semibold text-gray-700 mb-4 flex items-center border-b pb-2"><svg class="w-4 h-4 mr-1 text-blue-600" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M12.316 3.193a1 1 0 10-.671-1.884L6 4.757l-.375 1.5.375 1.5 5.645 3.448a1 1 0 001.077-1.666L8.4 6.757l3.916-2.788zM14.625 15.5l-2-2a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414-1.414zM4 10a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1z" clip-rule="evenodd" fill-rule="evenodd"></path></svg>Code Generation</h3>
-                                <div class="text-center space-y-4">
-                                    <p class="text-3xl font-bold text-gray-800" id="selected-count">0</p>
-                                    <p class="text-sm text-gray-500">Selected Test Cases</p>
-                                    <select class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 mb-4"><option>Select Language...</option><option>Python (Pytest/Selenium)</option><option>Java (TestNG/Selenium)</option><option>JavaScript (Playwright)</option></select>
-                                    <button class="btn-primary w-full text-white font-medium rounded-md shadow-sm transition duration-150 py-2 disabled:bg-gray-400 disabled:cursor-not-allowed" disabled>Generate Code</button>
-                                </div>
-                            </div>
+                            <!-- Code Generation panel removed from Library view per request -->
                         </div>
                     </div>
                 </div>
@@ -285,7 +258,9 @@
     </div>
 
     <script>
-        let allTestCases = [];
+            let allTestCases = [];
+            let currentPage = 1;
+            const pageSize = 5; // default page size for pagination
 
         document.addEventListener('DOMContentLoaded', () => {
             const sidebarLinks = document.querySelectorAll('.sidebar-link');
@@ -331,7 +306,7 @@
                         // Handle both array and wrapped response
                         allTestCases = Array.isArray(data) ? data : (data.testCases || []);
                         updateTestCaseTable(allTestCases);
-                        updateMetrics(allTestCases);
+                        updateMetrics();
                     } else {
                         console.error('Failed to load test cases:', response.status);
                     }
@@ -344,98 +319,199 @@
                 const tbody = document.querySelector('#tab-library-content tbody');
                 if (!tbody) return;
                 tbody.innerHTML = '';
-                
+
                 if (testCases.length === 0) {
+                    removePagination();
                     tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 2rem; color: #999;">No test cases found. Generate some test cases to get started!</td></tr>';
+                    updateTableHeader(0);
                     return;
                 }
-                
-                testCases.forEach(tc => {
+
+                // Pagination: calculate slice
+                const totalItems = testCases.length;
+                const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+                if (currentPage > totalPages) currentPage = totalPages;
+                const startIdx = (currentPage - 1) * pageSize;
+                const endIdx = Math.min(startIdx + pageSize, totalItems);
+                const pageItems = testCases.slice(startIdx, endIdx);
+
+                pageItems.forEach(tc => {
                     const row = document.createElement('tr');
-                    const priorityClass = tc.priority?.toUpperCase() === 'HIGH' ? 'priority-high' : tc.priority?.toUpperCase() === 'MEDIUM' ? 'priority-medium' : 'priority-low';
+                    // Prepare column values according to the required schema
+                    const title = tc.title || ('TC' + tc.id);
+                    const stepsArr = (tc.steps || []).map(s => (typeof s === 'object') ? (s.action || '') : s);
+                    const stepsPreview = stepsArr.slice(0, 2).join(' | ');
+                    const expected = (tc.expectedResults || []).slice(0, 1).join('; ') || '';
+                    const labels = (tc.tags || []).join(', ');
+                    const automationState = tc.automationState || 'Not Automated';
+                    const testCaseStatus = tc.status || '';
+                    const createdInSprint = tc.createdSprint || '';
+
                     row.innerHTML = `
                         <td class="py-3 px-2 whitespace-nowrap"><input type="checkbox" class="rounded text-indigo-600 focus:ring-indigo-500"></td>
-                        <td class="py-3 px-2 whitespace-nowrap text-blue-600 font-medium cursor-pointer hover:underline" onclick="showTestCaseModal(${tc.id})">${tc.testCaseId || 'TC' + tc.id}</td>
-                        <td class="py-3 px-2 whitespace-nowrap">${tc.title || ''}</td>
-                        <td class="py-3 px-2 whitespace-nowrap text-gray-600">${tc.appName || 'N/A'}</td>
-                        <td class="py-3 px-2 whitespace-nowrap text-gray-600">${tc.module || 'N/A'}</td>
-                        <td class="py-3 px-2 whitespace-nowrap"><span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${priorityClass}">${tc.priority || 'MEDIUM'}</span></td>
-                        <td class="py-3 px-2 whitespace-nowrap">${tc.steps?.length || 0}</td>
-                        <td class="py-3 px-2 whitespace-nowrap text-right"><button class="text-sm font-medium text-blue-600 hover:text-blue-800" onclick="showTestCaseModal(${tc.id})">View</button></td>
+                        <td class="py-3 px-2 whitespace-nowrap text-blue-600 font-medium cursor-pointer hover:underline" onclick="showTestCaseModal('${tc.id}')">${title}</td>
+                        <td class="py-3 px-2 whitespace-nowrap">${stepsPreview}</td>
+                        <td class="py-3 px-2 whitespace-nowrap">${expected}</td>
+                        <td class="py-3 px-2 whitespace-nowrap">${labels}</td>
+                        <td class="py-3 px-2 whitespace-nowrap">${automationState}</td>
+                        <td class="py-3 px-2 whitespace-nowrap">${testCaseStatus}</td>
+                        <td class="py-3 px-2 whitespace-nowrap">${createdInSprint}</td>
+                        <td class="py-3 px-2 whitespace-nowrap text-right"><button class="text-sm font-medium text-blue-600 hover:text-blue-800" onclick="showTestCaseModal('${tc.id}')">View</button></td>
                     `;
                     tbody.appendChild(row);
                 });
+
                 attachCheckboxListeners();
+                renderPagination(totalItems, totalPages);
+                // Update header count to reflect the currently displayed (filtered) set
+                updateTableHeader(testCases.length);
             }
 
-            function updateMetrics(testCases) {
-                const apps = new Set(testCases.map(tc => tc.appName)).size;
-                const modules = new Set(testCases.map(tc => tc.module)).size;
-                const tags = new Set(testCases.flatMap(tc => (tc.tags || []))).size;
-                
-                const metricsContainer = document.querySelector('#tab-library-content .grid-cols-2');
-                if (metricsContainer) {
-                    const cards = metricsContainer.querySelectorAll('div');
-                    if (cards[0]) cards[0].querySelector('div:first-child').textContent = testCases.length;
-                    if (cards[1]) cards[1].querySelector('div:first-child').textContent = apps || '0';
-                    if (cards[2]) cards[2].querySelector('div:first-child').textContent = modules || '0';
-                    if (cards[3]) cards[3].querySelector('div:first-child').textContent = tags || '0';
-                }
-                
-                // Populate filter dropdowns
-                const appOptions = [...new Set(allTestCases.map(tc => tc.appName).filter(Boolean))];
-                const moduleOptions = [...new Set(allTestCases.map(tc => tc.module).filter(Boolean))];
-                
-                const appSelect = document.getElementById('filter-app');
-                const moduleSelect = document.getElementById('filter-module');
-                
-                if (appSelect) {
-                    const currentValue = appSelect.value;
-                    appSelect.innerHTML = '<option value="">All Applications</option>';
-                    appOptions.forEach(app => {
-                        const option = document.createElement('option');
-                        option.value = app;
-                        option.textContent = app;
-                        appSelect.appendChild(option);
+            function renderPagination(totalItems, totalPages) {
+                // Remove existing pagination if any
+                removePagination();
+
+                if (totalPages <= 1) return; // no pagination needed
+
+                const container = document.createElement('div');
+                container.id = 'paginationContainer';
+                container.style.display = 'flex';
+                container.style.justifyContent = 'flex-end';
+                container.style.marginTop = '12px';
+
+                const ul = document.createElement('ul');
+                ul.style.listStyle = 'none';
+                ul.style.display = 'flex';
+                ul.style.gap = '6px';
+                ul.style.padding = '0';
+
+                const createPageBtn = (label, page, disabled) => {
+                    const li = document.createElement('li');
+                    const btn = document.createElement('button');
+                    btn.textContent = label;
+                    btn.disabled = !!disabled;
+                    btn.style.padding = '6px 10px';
+                    btn.style.border = '1px solid #e5e7eb';
+                    btn.style.borderRadius = '4px';
+                    btn.style.background = disabled ? '#f3f4f6' : 'white';
+                    btn.style.cursor = disabled ? 'default' : 'pointer';
+                    btn.addEventListener('click', () => {
+                        if (currentPage === page) return;
+                        currentPage = page;
+                        updateTestCaseTable(filterCurrentResults());
                     });
-                    appSelect.value = currentValue;
+                    li.appendChild(btn);
+                    return li;
+                };
+
+                // Prev
+                ul.appendChild(createPageBtn('Prev', Math.max(1, currentPage - 1), currentPage === 1));
+
+                // Page numbers (show up to 7: first, prev, current +/-1, next, last)
+                const maxButtons = 7;
+                let startPage = Math.max(1, currentPage - 2);
+                let endPage = Math.min(totalPages, startPage + maxButtons - 1);
+                if (endPage - startPage < maxButtons - 1) {
+                    startPage = Math.max(1, endPage - maxButtons + 1);
                 }
-                
-                if (moduleSelect) {
-                    const currentValue = moduleSelect.value;
-                    moduleSelect.innerHTML = '<option value="">All Modules</option>';
-                    moduleOptions.forEach(mod => {
-                        const option = document.createElement('option');
-                        option.value = mod;
-                        option.textContent = mod;
-                        moduleSelect.appendChild(option);
+
+                for (let p = startPage; p <= endPage; p++) {
+                    const li = document.createElement('li');
+                    const btn = document.createElement('button');
+                    btn.textContent = String(p);
+                    btn.style.padding = '6px 10px';
+                    btn.style.border = '1px solid #e5e7eb';
+                    btn.style.borderRadius = '4px';
+                    btn.style.background = (p === currentPage) ? '#0052cc' : 'white';
+                    btn.style.color = (p === currentPage) ? 'white' : '#111827';
+                    btn.style.cursor = 'pointer';
+                    btn.addEventListener('click', () => {
+                        if (currentPage === p) return;
+                        currentPage = p;
+                        updateTestCaseTable(filterCurrentResults());
                     });
-                    moduleSelect.value = currentValue;
+                    li.appendChild(btn);
+                    ul.appendChild(li);
                 }
-                
-                // Update test cases count in table header
+
+                // Next
+                ul.appendChild(createPageBtn('Next', Math.min(totalPages, currentPage + 1), currentPage === totalPages));
+
+                container.appendChild(ul);
+
+                const tableCard = document.querySelector('#tab-library-content .bg-white.p-6');
+                if (tableCard) {
+                    tableCard.appendChild(container);
+                }
+            }
+
+            function removePagination() {
+                const existing = document.getElementById('paginationContainer');
+                if (existing) existing.remove();
+            }
+
+            // Filters removed: return the full list
+            function filterCurrentResults() {
+                return allTestCases;
+            }
+
+            function updateTableHeader(count) {
                 const tableHeader = document.querySelector('#tab-library-content h2');
                 if (tableHeader) {
-                    tableHeader.textContent = `Test Cases (${testCases.length})`;
+                    tableHeader.textContent = `Test Cases (${count})`;
                 }
+            }
+
+            function updateMetrics() {
+                // Use the global allTestCases for metrics and for populating filter dropdowns
+                const src = Array.isArray(allTestCases) ? allTestCases : [];
+                const apps = new Set(src.map(tc => tc.appName).filter(Boolean)).size;
+                const modules = new Set(src.map(tc => tc.module).filter(Boolean)).size;
+                const tags = new Set(src.flatMap(tc => (tc.tags || [])).filter(Boolean)).size;
+
+                const metricsContainer = document.querySelector('#tab-library-content .grid-cols-2');
+                if (metricsContainer) {
+                    // Find the four metric cards inside the grid and set their numeric values
+                    const cardDivs = metricsContainer.querySelectorAll(':scope > div');
+                    if (cardDivs[0]) {
+                        const el = cardDivs[0].querySelector('div');
+                        if (el) el.textContent = src.length;
+                    }
+                    if (cardDivs[1]) {
+                        const el = cardDivs[1].querySelector('div');
+                        if (el) el.textContent = apps || '0';
+                    }
+                    if (cardDivs[2]) {
+                        const el = cardDivs[2].querySelector('div');
+                        if (el) el.textContent = modules || '0';
+                    }
+                    if (cardDivs[3]) {
+                        const el = cardDivs[3].querySelector('div');
+                        if (el) el.textContent = tags || '0';
+                    }
+                }
+
+                // Filter UI removed, no dropdowns to populate
             }
 
             function attachCheckboxListeners() {
                 const table = document.querySelector('.min-w-full');
                 const selectedCount = document.getElementById('selected-count');
-                const generateCodeButton = document.querySelector('.lg\\:w-72 button');
+                const generateCodeButton = document.querySelector('.lg\\:w-72 button') || document.getElementById('generate-code-btn');
                 if (table) {
                     const checkboxes = table.querySelectorAll('input[type="checkbox"]');
                     checkboxes.forEach(checkbox => {
                         checkbox.addEventListener('change', () => {
                             let count = document.querySelectorAll('#tab-library-content tbody input[type="checkbox"]:checked').length;
-                            selectedCount.textContent = count;
-                            if (count > 0) {
-                                generateCodeButton.disabled = false;
-                                generateCodeButton.classList.remove('disabled:bg-gray-400', 'disabled:cursor-not-allowed');
-                            } else {
-                                generateCodeButton.disabled = true;
-                                generateCodeButton.classList.add('disabled:bg-gray-400', 'disabled:cursor-not-allowed');
+                            if (selectedCount) selectedCount.textContent = count;
+                            if (generateCodeButton) {
+                                if (count > 0) {
+                                    generateCodeButton.disabled = false;
+                                    generateCodeButton.classList.remove('disabled:bg-gray-400', 'disabled:cursor-not-allowed');
+                                } else {
+                                    generateCodeButton.disabled = true;
+                                    generateCodeButton.classList.add('disabled:bg-gray-400', 'disabled:cursor-not-allowed');
+                                }
                             }
                         });
                     });
@@ -571,8 +647,6 @@
                 generateForm.addEventListener('submit', async (e) => {
                     e.preventDefault();
                     const requirements = document.getElementById('requirements').value;
-                    const appName = document.getElementById('app-name').value;
-                    const moduleName = document.getElementById('module-name').value;
 
                     if (!requirements) {
                         alert('Please enter requirements or upload a file');
@@ -587,13 +661,7 @@
                         const response = await fetch('/api/v1/agents/testcases/generate', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                text: requirements,
-                                context: {
-                                    appName: appName || 'Unknown',
-                                    module: moduleName || 'Unknown'
-                                }
-                            })
+                            body: JSON.stringify({ text: requirements })
                         });
 
                         if (response.ok) {
@@ -625,30 +693,7 @@
                 });
             }
 
-            // Filter Handler
-            const applyFilterBtn = document.getElementById('apply-filter-btn');
-            if (applyFilterBtn) {
-                applyFilterBtn.addEventListener('click', () => {
-                    const appValue = document.getElementById('filter-app').value;
-                    const moduleValue = document.getElementById('filter-module').value;
-                    const priorityValue = document.getElementById('filter-priority').value;
-                    
-                    let filtered = allTestCases;
-                    
-                    if (appValue) {
-                        filtered = filtered.filter(tc => tc.appName === appValue);
-                    }
-                    if (moduleValue) {
-                        filtered = filtered.filter(tc => tc.module === moduleValue);
-                    }
-                    if (priorityValue) {
-                        filtered = filtered.filter(tc => tc.priority === priorityValue);
-                    }
-                    
-                    updateTestCaseTable(filtered);
-                    updateMetrics(filtered);
-                });
-            }
+            // Filter functionality removed
 
             sidebarLinks.forEach(link => {
                 link.addEventListener('click', (e) => {

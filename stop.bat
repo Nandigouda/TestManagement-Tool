@@ -8,34 +8,22 @@ echo   QA Automation Platform - STOP
 echo =========================================
 echo.
 
-REM Check if there's a process running on port 8081
+REM First try to stop process listening on port 8081
 echo Checking for running process on port 8081...
-setlocal enabledelayedexpansion
-
 for /f "tokens=5" %%a in ('netstat -aon ^| findstr :8081 ^| findstr LISTENING') do (
-    set "PID=%%a"
-    echo Found process with PID !PID! listening on port 8081
-    echo Stopping process...
-    taskkill /PID !PID! /F /T
-    if !errorlevel! equ 0 (
-        echo.
-        echo ✓ Process stopped successfully
-    ) else (
-        echo.
-        echo × Failed to stop process
+    echo Found PID %%a listening on port 8081; attempting to stop...
+    taskkill /PID %%a /F /T >nul 2>&1 && (
+        echo ✓ Process %%a stopped
+    ) || (
+        echo × Failed to stop process %%a
     )
 )
 
-REM Also try to stop Java processes by name
-echo.
-echo Stopping any remaining Java processes...
-taskkill /IM java.exe /F /T >nul 2>&1
+REM Try to stop any Java process that has our jar in its command line (safer than killing all java.exe)
+echo Attempting to stop Java processes that contain 'qa-automation-platform' in command line...
+powershell -Command "Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -and $_.CommandLine -like '*qa-automation-platform*' } | ForEach-Object { Write-Output ('Stopping PID ' + $_.ProcessId); Stop-Process -Id $_.ProcessId -Force }" 2>nul
 
-if errorlevel 1 (
-    echo No Java processes found
-) else (
-    echo ✓ Java processes terminated
-)
+echo Stop complete.
 
 echo.
 echo =========================================

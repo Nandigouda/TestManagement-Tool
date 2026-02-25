@@ -41,7 +41,7 @@ class UnifiedTestCasesComponent {
                         <!-- File Upload (Compact) -->
                         <div>
                             <label class="form-label" style="font-size: 12px; font-weight: 600;">📄 Upload File</label>
-                            <div class="file-upload-area" id="uploadArea" style="border: 2px dashed var(--border); padding: 12px; border-radius: 6px; text-align: center; cursor: pointer; transition: all 0.3s ease; background: var(--light-bg);">
+                            <div class="file-upload-area" id="uploadArea" style="border: 2px dashed var(--border-color); padding: 12px; border-radius: 6px; text-align: center; cursor: pointer; transition: all 0.3s ease; background: var(--bg-light);">
                                 <p style="font-size: 18px; margin: 0 0 4px 0;">+</p>
                                 <p style="margin: 0; font-size: 11px; color: var(--text-secondary);">Click or drag</p>
                                 <p style="margin: 3px 0 0 0; font-size: 10px; color: #999;">PDF, DOCX, TXT</p>
@@ -55,17 +55,7 @@ class UnifiedTestCasesComponent {
                             <label class="form-label" style="font-size: 12px; font-weight: 600;">✏️ Requirements Text</label>
                             <textarea id="requirementsText" class="form-control" placeholder="Paste requirements or describe your test scenario..." rows="3" style="min-height: 100px; font-size: 12px; resize: vertical;"></textarea>
                             
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
-                                <div>
-                                    <label class="form-label" style="font-size: 11px;">Application</label>
-                                    <input type="text" id="appName" class="form-control" placeholder="Amazon" style="font-size: 12px; padding: 6px 8px;">
-                                </div>
-                                <div>
-                                    <label class="form-label" style="font-size: 11px;">Module</label>
-                                    <input type="text" id="module" class="form-control" placeholder="Payment" style="font-size: 12px; padding: 6px 8px;">
-                                </div>
-                            </div>
-                            
+                            <!-- Application and Module inputs removed per request -->
                             <button id="generateBtn" class="btn btn-primary" style="width: 100%; margin-top: 10px; font-size: 13px; padding: 8px;">🚀 Generate Test Cases</button>
                         </div>
                     </div>
@@ -85,27 +75,9 @@ class UnifiedTestCasesComponent {
                 <!-- Filters & Code Generation -->
                 <div class="card" style="margin-bottom: 20px;">
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 20px;">
-                        <!-- Filters Section -->
-                        <div style="flex: 1;">
-                            <div class="card-title" style="font-size: 14px; margin-bottom: 10px;">🔍 Filter</div>
-                            <div class="grid grid-4" style="gap: 10px;">
-                                <select id="filterApp" class="form-control" style="font-size: 12px;">
-                                    <option value="">All Apps</option>
-                                </select>
-                                <select id="filterModule" class="form-control" style="font-size: 12px;">
-                                    <option value="">All Modules</option>
-                                </select>
-                                <select id="filterPriority" class="form-control" style="font-size: 12px;">
-                                    <option value="">All Priority</option>
-                                    <option value="HIGH">HIGH</option>
-                                    <option value="MEDIUM">MEDIUM</option>
-                                    <option value="LOW">LOW</option>
-                                </select>
-                                <button id="applyFilterBtn" class="btn btn-primary" style="font-size: 12px;">Apply</button>
-                            </div>
-                        </div>
+                        <!-- Filters removed per request -->
                         <!-- Code Generation Section -->
-                        <div style="flex: 0 0 auto; border-left: 1px solid var(--border); padding-left: 15px;">
+                        <div style="flex: 0 0 auto; border-left: 1px solid var(--border-color); padding-left: 15px;">
                             <div style="font-weight: 600; margin-bottom: 8px; font-size: 13px;">💻 Code Generation</div>
                             <button id="openCodeGenModalBtn" class="btn btn-success" style="padding: 8px 14px; font-size: 12px; width: 100%; display: none; margin-bottom: 8px;">Generate Code</button>
                             <div id="selectedCountLabel" style="font-size: 11px; color: var(--text-secondary); text-align: center;">0 selected</div>
@@ -156,8 +128,7 @@ class UnifiedTestCasesComponent {
         // Generate button
         document.getElementById('generateBtn').addEventListener('click', () => this.generateTestCases());
 
-        // Filter
-        document.getElementById('applyFilterBtn').addEventListener('click', () => this.applyFilters());
+        // Filter removed: no apply button to wire
     }
 
     switchTab(tab) {
@@ -192,33 +163,7 @@ class UnifiedTestCasesComponent {
             this.metrics = data;
             console.log('Metrics loaded:', data);
 
-            // Populate filter dropdowns
-            const appSelect = document.getElementById('filterApp');
-            const moduleSelect = document.getElementById('filterModule');
-            
-            if (data.applications && data.applications.length > 0) {
-                console.log('Populating apps:', data.applications);
-                data.applications.forEach(app => {
-                    const option = document.createElement('option');
-                    option.value = app;
-                    option.textContent = app || 'Unknown';
-                    appSelect.appendChild(option);
-                });
-            } else {
-                console.log('No applications found in metrics');
-            }
-            
-            if (data.modules && data.modules.length > 0) {
-                console.log('Populating modules:', data.modules);
-                data.modules.forEach(mod => {
-                    const option = document.createElement('option');
-                    option.value = mod;
-                    option.textContent = mod || 'Unknown';
-                    moduleSelect.appendChild(option);
-                });
-            } else {
-                console.log('No modules found in metrics');
-            }
+            // Filters removed: metrics fetched for display only
 
             // Display metrics
             this.displayMetrics();
@@ -235,122 +180,36 @@ class UnifiedTestCasesComponent {
         }
     }
 
-    async refreshFilterDropdowns() {
-        try {
-            console.log('Refreshing filter dropdowns...');
-            const response = await fetch('/api/v1/testcases/metrics');
-            const data = await response.json();
-            console.log('Metrics data:', data);
-            this.metrics = data;
-
-            // Refresh dropdowns
-            const appSelect = document.getElementById('filterApp');
-            const moduleSelect = document.getElementById('filterModule');
-            
-            // Clear existing options except the first one
-            appSelect.innerHTML = '<option value="">All Applications</option>';
-            moduleSelect.innerHTML = '<option value="">All Modules</option>';
-            
-            // Add new options
-            if (data.applications && data.applications.length > 0) {
-                console.log('Adding applications to dropdown:', data.applications);
-                data.applications.forEach(app => {
-                    const option = document.createElement('option');
-                    option.value = app;
-                    option.textContent = app || 'Unknown';
-                    appSelect.appendChild(option);
-                });
-            } else {
-                console.log('No applications to add');
-            }
-            
-            if (data.modules && data.modules.length > 0) {
-                console.log('Adding modules to dropdown:', data.modules);
-                data.modules.forEach(mod => {
-                    const option = document.createElement('option');
-                    option.value = mod;
-                    option.textContent = mod || 'Unknown';
-                    moduleSelect.appendChild(option);
-                });
-            } else {
-                console.log('No modules to add');
-            }
-
-            // Reload all test cases
-            const tcResponse = await fetch('/api/v1/testcases');
-            const tcData = await tcResponse.json();
-            console.log('Test cases data:', tcData);
-            this.allTestCases = tcData.testCases || [];
-            this.filteredTestCases = [...this.allTestCases];
-            this.displayMetrics();
-        } catch (error) {
-            console.error('Error refreshing dropdowns:', error);
-        }
-    }
+    // Filters removed: dropdown refresh not needed
 
     displayMetrics() {
         if (!this.metrics) return;
-        
-        const html = `
-            <div class="card" style="text-align: center; padding: 15px;">
-                <p style="font-size: 24px; font-weight: 700; color: var(--primary); margin: 0;">${this.metrics.totalTestCases}</p>
-                <p style="font-size: 11px; color: var(--text-secondary); margin: 5px 0 0 0;">Test Cases</p>
+        const m = this.metrics;
+        const metricsSection = document.getElementById('metricsSection');
+        if (!metricsSection) return;
+
+        metricsSection.innerHTML = `
+            <div class="card" style="padding:12px; text-align:center;">
+                <div style="font-weight:600; font-size:12px;">Total Test Cases</div>
+                <div style="font-size:18px; margin-top:6px;">${m.totalTestCases || 0}</div>
             </div>
-            <div class="card" style="text-align: center; padding: 15px;">
-                <p style="font-size: 24px; font-weight: 700; color: var(--info); margin: 0;">${this.metrics.totalApplications}</p>
-                <p style="font-size: 11px; color: var(--text-secondary); margin: 5px 0 0 0;">Applications</p>
+            <div class="card" style="padding:12px; text-align:center;">
+                <div style="font-weight:600; font-size:12px;">Applications</div>
+                <div style="font-size:18px; margin-top:6px;">${m.totalApplications || 0}</div>
             </div>
-            <div class="card" style="text-align: center; padding: 15px;">
-                <p style="font-size: 24px; font-weight: 700; color: var(--warning); margin: 0;">${this.metrics.totalModules}</p>
-                <p style="font-size: 11px; color: var(--text-secondary); margin: 5px 0 0 0;">Modules</p>
+            <div class="card" style="padding:12px; text-align:center;">
+                <div style="font-weight:600; font-size:12px;">Modules</div>
+                <div style="font-size:18px; margin-top:6px;">${m.totalModules || 0}</div>
             </div>
-            <div class="card" style="text-align: center; padding: 15px;">
-                <p style="font-size: 24px; font-weight: 700; color: var(--success); margin: 0;">${this.metrics.totalTags}</p>
-                <p style="font-size: 11px; color: var(--text-secondary); margin: 5px 0 0 0;">Tags</p>
+            <div class="card" style="padding:12px; text-align:center;">
+                <div style="font-weight:600; font-size:12px;">Tags</div>
+                <div style="font-size:18px; margin-top:6px;">${m.totalTags || 0}</div>
             </div>
         `;
-        
-        document.getElementById('metricsSection').innerHTML = html;
-    }
-
-    async handleFileUpload(file) {
-        const statusDiv = document.getElementById('uploadStatus');
-        
-        const validTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 
-                           'application/vnd.openxmlformats-officedocument.presentationml.presentation', 'text/plain'];
-        
-        if (!validTypes.includes(file.type) && !file.name.match(/\.(pdf|docx|pptx|txt)$/i)) {
-            statusDiv.innerHTML = '<span style="color: #d9534f; font-size: 11px;">Invalid file type</span>';
-            return;
-        }
-
-        const formData = new FormData();
-        formData.append('file', file);
-
-        try {
-            statusDiv.innerHTML = '<span style="color: #5bc0de; font-size: 11px;">Processing...</span>';
-            const response = await fetch('/api/v1/files/extract', {
-                method: 'POST',
-                body: formData
-            });
-
-            const data = await response.json();
-            
-            if (response.ok) {
-                document.getElementById('requirementsText').value = data.text || '';
-                statusDiv.innerHTML = '<span style="color: #5cb85c; font-size: 11px;">✓ Extracted</span>';
-            } else {
-                statusDiv.innerHTML = `<span style="color: #d9534f; font-size: 11px;">Error: ${data.message || 'Failed'}</span>`;
-            }
-        } catch (error) {
-            statusDiv.innerHTML = `<span style="color: #d9534f; font-size: 11px;">Error: ${error.message}</span>`;
-        }
     }
 
     async generateTestCases() {
         const requirementsText = document.getElementById('requirementsText').value;
-        const appName = document.getElementById('appName').value || 'Application';
-        const module = document.getElementById('module').value || 'General';
         const resultsDiv = document.getElementById('resultsContainer');
 
         if (!requirementsText.trim()) {
@@ -358,13 +217,7 @@ class UnifiedTestCasesComponent {
             return;
         }
 
-        const payload = {
-            text: requirementsText,
-            context: {
-                appName: appName,
-                module: module
-            }
-        };
+        const payload = { text: requirementsText };
 
         try {
             resultsDiv.innerHTML = '<div class="alert alert-info" style="margin-top: 20px;">Generating test cases...</div>';
@@ -378,8 +231,6 @@ class UnifiedTestCasesComponent {
             
             if (response.ok && data.testCases && data.testCases.length > 0) {
                 this.currentTestCases = data.testCases;
-                this.currentAppName = appName;
-                this.currentModule = module;
                 
                 let html = '<div class="card mt-20">';
                 html += '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">';
@@ -395,7 +246,7 @@ class UnifiedTestCasesComponent {
                     const priorityColor = tc.priority === 'HIGH' ? '#d9534f' : tc.priority === 'MEDIUM' ? '#f0ad4e' : '#5cb85c';
                     
                     html += `
-                        <div style="border-left: 3px solid ${priorityColor}; padding: 12px; margin-bottom: 10px; background: var(--light-bg); border-radius: 4px;">
+                        <div style="border-left: 3px solid ${priorityColor}; padding: 12px; margin-bottom: 10px; background: var(--bg-light); border-radius: 4px;">
                             <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
                                 <strong style="font-size: 13px;">${tcId}: ${this.escapeHtml(tc.title || 'Test Case')}</strong>
                                 <span style="background: ${priorityColor}; color: white; padding: 2px 8px; border-radius: 3px; font-size: 11px; font-weight: 600;">${tc.priority || 'MEDIUM'}</span>
@@ -408,8 +259,7 @@ class UnifiedTestCasesComponent {
                 html += '</div>';
                 resultsDiv.innerHTML = html;
                 
-                // Refresh dropdowns with new data
-                await this.refreshFilterDropdowns();
+                // Filters removed: no dropdown refresh needed
                 
                 document.getElementById('exportCSV').addEventListener('click', () => this.exportTestCasesAsCSV());
                 document.getElementById('exportExcel').addEventListener('click', () => this.exportTestCasesAsExcel());
@@ -422,17 +272,8 @@ class UnifiedTestCasesComponent {
     }
 
     applyFilters() {
-        const appName = document.getElementById('filterApp').value;
-        const module = document.getElementById('filterModule').value;
-        const priority = document.getElementById('filterPriority').value;
-
-        this.filteredTestCases = this.allTestCases.filter(tc => {
-            if (appName && tc.appName !== appName) return false;
-            if (module && tc.module !== module) return false;
-            if (priority && tc.priority !== priority) return false;
-            return true;
-        });
-
+        // Filters removed: reset to full list
+        this.filteredTestCases = [...this.allTestCases];
         this.displayLibraryTestCases();
     }
 
@@ -453,7 +294,7 @@ class UnifiedTestCasesComponent {
             <div style="overflow-x: auto; font-size: 12px;">
                 <table style="width: 100%; border-collapse: collapse;">
                     <thead>
-                        <tr style="background: var(--light-bg); border-bottom: 1px solid var(--border);">
+                        <tr style="background: var(--bg-light); border-bottom: 1px solid var(--border-color);">
                             <th style="padding: 8px; text-align: center; font-weight: 600; width: 30px;">
                                 <input type="checkbox" id="selectAllCheckbox" style="cursor: pointer;">
                             </th>
@@ -474,11 +315,11 @@ class UnifiedTestCasesComponent {
             const isSelected = this.selectedTestCaseIds.has(tc.id);
 
             html += `
-                <tr style="border-bottom: 1px solid var(--border); background: ${isSelected ? 'var(--light-bg)' : 'transparent'};">
+                <tr style="border-bottom: 1px solid var(--border-color); background: ${isSelected ? 'var(--bg-light)' : 'transparent'};">
                     <td style="padding: 8px; text-align: center;">
                         <input type="checkbox" class="tc-select" data-tc-id="${tc.id}" ${isSelected ? 'checked' : ''} style="cursor: pointer;">
                     </td>
-                    <td style="padding: 8px;"><strong style="color: var(--primary);">TC${tcNumber}</strong></td>
+                    <td style="padding: 8px;"><strong style="color: var(--primary-color);">TC${tcNumber}</strong></td>
                     <td style="padding: 8px;">${this.escapeHtml(tc.title || 'Untitled')}</td>
                     <td style="padding: 8px;">${this.escapeHtml(tc.appName || '-')}</td>
                     <td style="padding: 8px;">${this.escapeHtml(tc.module || '-')}</td>
@@ -503,6 +344,43 @@ class UnifiedTestCasesComponent {
 
         // Setup checkbox event listeners
         this.setupCheckboxListeners();
+
+        // Setup View test case button listeners
+        const viewButtons = document.querySelectorAll('.view-tc-btn');
+        viewButtons.forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                const tcId = btn.getAttribute('data-tc-id');
+
+                // Match using string coercion to avoid type mismatches
+                let testCase = this.filteredTestCases.find(tc => String(tc.id) === String(tcId));
+
+                // Fallback: if not found locally, try fetching from server
+                if (!testCase) {
+                    console.warn('Test case not found locally, fetching from server:', tcId);
+                    try {
+                        const resp = await fetch(`/api/v1/testcases/${encodeURIComponent(tcId)}`);
+                        if (resp.ok) {
+                            testCase = await resp.json();
+                        } else {
+                            console.error('Server returned', resp.status, 'for', tcId);
+                            alert('Error: Test case not found on server.');
+                            return;
+                        }
+                    } catch (err) {
+                        console.error('Error fetching test case:', err);
+                        alert('Error fetching test case details: ' + err.message);
+                        return;
+                    }
+                }
+
+                try {
+                    this.showTestCaseModal(testCase);
+                } catch (err) {
+                    console.error('Error showing test case modal:', err);
+                    alert('Failed to open test case view: ' + err.message);
+                }
+            });
+        });
 
         const exportBtn = document.getElementById('exportAllBtn');
         if (exportBtn) {
@@ -549,18 +427,6 @@ class UnifiedTestCasesComponent {
         if (openCodeGenBtn) {
             openCodeGenBtn.addEventListener('click', () => this.openCodeGenerationModal());
         }
-
-        // View test case buttons
-        const viewButtons = document.querySelectorAll('.view-tc-btn');
-        viewButtons.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const tcId = btn.getAttribute('data-tc-id');
-                const testCase = this.filteredTestCases.find(tc => tc.id === tcId);
-                if (testCase) {
-                    this.showTestCaseModal(testCase);
-                }
-            });
-        });
     }
 
     updateGenerateCodeButtonVisibility() {
@@ -597,7 +463,7 @@ class UnifiedTestCasesComponent {
                     
                     <div style="margin-bottom: 15px;">
                         <label style="display: block; font-weight: 600; margin-bottom: 6px; font-size: 13px;">Framework *</label>
-                        <select id="frameworkSelect" style="width: 100%; padding: 8px 12px; border: 1px solid var(--border); border-radius: 4px; font-size: 12px;">
+                        <select id="frameworkSelect" style="width: 100%; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 12px;">
                             <option value="">-- Select Framework --</option>
                             <option value="SELENIUM">Selenium WebDriver</option>
                             <option value="PLAYWRIGHT">Playwright</option>
@@ -606,7 +472,7 @@ class UnifiedTestCasesComponent {
 
                     <div style="margin-bottom: 15px;">
                         <label style="display: block; font-weight: 600; margin-bottom: 6px; font-size: 13px;">Language *</label>
-                        <select id="languageSelect" style="width: 100%; padding: 8px 12px; border: 1px solid var(--border); border-radius: 4px; font-size: 12px;">
+                        <select id="languageSelect" style="width: 100%; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 12px;">
                             <option value="">-- Select Language --</option>
                         </select>
                     </div>
