@@ -117,12 +117,18 @@ class TestCaseAgent:
         ]
 
     def _validate_rows(self, rows: List[TestCaseRow]) -> List[TestCaseRow]:
+        default_prefix = "UAT-Testing-RuleFamily"
         for row in rows:
-            if "should" not in row.expected_result.lower():
-                row.expected_result = f"System should {row.expected_result[0].lower() + row.expected_result[1:]}"
+            row.test_case_title = self._normalize_title(row.test_case_title, default_prefix)
+
+            normalized_expected = row.expected_result.strip()
+            if not normalized_expected:
+                row.expected_result = "System should display the expected outcome"
+            elif "should" not in normalized_expected.lower():
+                row.expected_result = f"System should {normalized_expected[0].lower() + normalized_expected[1:]}"
+
             row.automation_state = "Not Automated"
-            if not row.test_case_title.endswith("Verify"):
-                row.test_case_title = f"{row.test_case_title.rstrip(', ')}, Verify"
+
         if rows and "Pre-condition" not in rows[0].test_steps:
             rows.insert(
                 0,
@@ -139,6 +145,21 @@ class TestCaseAgent:
                 ),
             )
         return rows
+
+    def _normalize_title(self, title: str, default_prefix: str) -> str:
+        normalized_title = title.strip()
+        if not normalized_title:
+            normalized_title = "Story Analysis, Generate Test Cases, Functional Coverage"
+
+        has_allowed_prefix = any(
+            normalized_title == prefix or normalized_title.startswith(f"{prefix},") for prefix in ALLOWED_PREFIX_LABELS
+        )
+        if not has_allowed_prefix:
+            normalized_title = f"{default_prefix}, {normalized_title}"
+
+        if not normalized_title.endswith("Verify"):
+            normalized_title = f"{normalized_title.rstrip(', ')}, Verify"
+        return normalized_title
 
 
 def rows_to_markdown(rows: List[TestCaseRow]) -> str:

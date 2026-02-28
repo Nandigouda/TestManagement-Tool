@@ -23,3 +23,23 @@ def test_markdown_has_required_columns() -> None:
     rows = agent.run(TestCaseRequest(user_requirement="Req"))
     markdown = rows_to_markdown(rows)
     assert "| Test Case Title | Test Steps | Expected Result | Labels | Automation State | Test Case Status | Created in Sprint |" in markdown
+
+
+def test_validate_rows_handles_empty_expected_result_without_crashing() -> None:
+    agent = TestCaseAgent()
+    rows = agent._deterministic_rows(TestCaseRequest(user_requirement="Req"))
+    rows[1].expected_result = ""
+
+    validated = agent._validate_rows(rows)
+
+    assert validated[1].expected_result == "System should display the expected outcome"
+
+
+def test_validate_rows_enforces_allowed_uat_prefix() -> None:
+    agent = TestCaseAgent()
+    rows = agent._deterministic_rows(TestCaseRequest(user_requirement="Req"))
+    rows[0].test_case_title = "Smoke Tests, Verify"
+
+    validated = agent._validate_rows(rows)
+
+    assert validated[0].test_case_title.startswith("UAT-Testing-RuleFamily,")
