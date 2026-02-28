@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QA Platform - Integrated Test Case Engine</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0052cc;
+            --primary-hover: #0065ff;
+            --success-color: #36b37e;
+            --danger-color: #ff5630;
+            --warning-color: #ffab00;
+        }
+        body { font-family: 'Inter', sans-serif; background-color: #f4f5f7; }
+        .sidebar-link.active { background-color: #e6f0ff; color: var(--primary-color); position: relative; }
+        .sidebar-link.active::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background-color: var(--primary-color); border-radius: 0 4px 4px 0; }
+        .tab-link { transition: all 150ms ease; border-bottom-width: 2px; border-color: transparent; }
+        .tab-link.tab-active { color: var(--primary-color); border-color: var(--primary-color); font-weight: 600; }
+        .btn-primary { background-color: var(--primary-color); color: white; }
+        .btn-primary:hover { background-color: var(--primary-hover); }
+        .spinner { border: 2px solid rgba(255, 255, 255, 0.3); border-top: 2px solid white; border-radius: 50%; width: 14px; height: 14px; animation: spin 0.8s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .excel-table-header { background-color: #f4f5f7; font-weight: 600; font-size: 0.7rem; text-transform: uppercase; color: #5e6c84; }
+        .modal-backdrop { background-color: rgba(9, 30, 66, 0.54); }
+        .file-pill { background: #f4f5f7; border: 1px border #dfe1e6; transition: all 0.2s; }
+        .file-pill:hover { background: #ebecf0; }
+    </style>
+</head>
+<body class="min-h-screen antialiased text-gray-800">
+
+    <!-- Header -->
+    <header class="h-14 bg-white shadow-sm border-b border-gray-200 sticky top-0 z-20 flex items-center justify-between px-4">
+        <div class="flex items-center space-x-4">
+            <div class="flex items-center cursor-pointer">
+                <svg class="w-6 h-6 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1v-3m-6.447-2.618a.5.5 0 010-.764L10.5 12l-1.947-2.618a.5.5 0 010-.764L10.5 6l-1.947-2.618a.5.5 0 010-.764L10.5 0l1.947 2.618a.5.5 0 010 .764L13.5 6l1.947 2.618a.5.5 0 010 .764L13.5 12l-1.947-2.618a.5.5 0 010 .764L13.5 18zM6 10H3a2 2 0 00-2 2v4a2 2 0 002 2h3m12-8h3a2 2 0 012 2v4a2 2 0 01-2 2h-3"></path></svg>
+                <span class="text-lg font-bold">QA Engine</span>
+            </div>
+            <div class="h-6 w-px bg-gray-200"></div>
+            <span class="text-sm text-gray-500 font-medium"></span>
+        </div>
+        <div class="flex items-center space-x-3">
+            <div class="hidden sm:flex items-center bg-gray-100 rounded-md px-3 py-1 mr-4 border border-gray-200">
+                <span class="w-2 h-2 rounded-full bg-green-500 mr-2 animate-pulse"></span>
+                <span class="text-xs font-semibold text-gray-600 uppercase">Agent Online</span>
+            </div>
+            <button class="w-8 h-8 rounded-full bg-blue-600 text-white font-medium text-xs flex items-center justify-center">NN</button>
+        </div>
+    </header>
+
+    <div class="flex">
+        <!-- Sidebar -->
+        <aside class="w-60 bg-white border-r border-gray-200 h-[calc(100vh-3.5rem)] sticky top-14 flex-shrink-0">
+            <div class="p-4">
+                <div class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Core Tools</div>
+                <nav class="space-y-1">
+                    <a href="#" data-tab="generate" class="sidebar-link active flex items-center px-3 py-2 text-sm font-medium rounded-md">
+                        <svg class="w-5 h-5 mr-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        <span>Test Case Engine</span>
+                    </a>
+                    <a href="#" data-tab="jira" class="sidebar-link flex items-center px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 rounded-md">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        <span>Jira Integration</span>
+                    </a>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="flex-grow min-w-0">
+            <div class="bg-white border-b border-gray-200 px-8 pt-6">
+                <div class="mb-4">
+                    <h1 class="text-2xl font-bold text-gray-900">Test Case Engine</h1>
+                </div>
+                <nav class="flex space-x-8">
+                    <button data-tab="generate" class="tab-link tab-active pb-3 text-sm font-medium">Generate Cases</button>
+                    <button data-tab="library" class="tab-link pb-3 text-sm font-medium text-gray-500 hover:text-gray-700">Test Case Library</button>
+                </nav>
+            </div>
+
+            <div class="p-8">
+                <!-- GENERATE TAB -->
+                <section id="pane-generate" class="tab-pane">
+                    <div class="max-w-5xl mx-auto space-y-6">
+                        <div class="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden p-6">
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                                <div class="md:col-span-1 space-y-4">
+                                    <div>
+                                        <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Prefix Label</label>
+                                        <select id="prefix-select" class="w-full text-sm border-gray-300 rounded-md focus:ring-blue-500">
+                                            <option value="UAT-Modeling-Decision">UAT-Modeling-Decision</option>
+                                            <option value="UAT-Modeling-RuleFamily">UAT-Modeling-RuleFamily</option>
+                                            <option value="UAT-Testing-Decision">UAT-Testing-Decision</option>
+                                            <option value="UAT-Repo-Assets">UAT-Repo-Assets</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- FILE UPLOAD SECTION -->
+                                    <div class="pt-4 border-t border-gray-100">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <label class="block text-xs font-bold text-gray-500 uppercase">Reference Files</label>
+                                            <button id="add-file-btn" class="p-1 hover:bg-gray-100 rounded text-blue-600 transition-colors" title="Add File">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                                            </button>
+                                            <input type="file" id="file-input" class="hidden" multiple>
+                                        </div>
+                                        <div id="file-list" class="space-y-2">
+                                            <!-- Dynamic File Pills -->
+                                            <p class="text-[10px] text-gray-400 italic">No files attached for analysis.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="md:col-span-3">
+                                    <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Requirement Context</label>
+                                    <textarea id="gen-input" rows="8" class="w-full text-sm border-gray-300 rounded-md p-3" placeholder="Input requirement details or paste user story here..."></textarea>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex justify-end">
+                                <button id="trigger-generate" class="btn-primary px-6 py-2 font-bold rounded shadow flex items-center transition-all">
+                                    <span id="btn-text">Generate Scenarios</span>
+                                    <div id="btn-loader" class="spinner ml-2 hidden"></div>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="gen-output-container" class="hidden">
+                            <div class="flex justify-between items-end mb-4">
+                                <h3 class="font-bold flex items-center">
+                                    Generated Scenarios
+                                    <span id="analysis-badge" class="ml-3 text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100 hidden">Analyzed with File Context</span>
+                                </h3>
+                                <button id="save-to-library" class="px-4 py-2 bg-green-600 text-white rounded text-xs font-bold hover:bg-green-700">Commit to Library</button>
+                            </div>
+                            <div class="bg-white border border-gray-200 rounded-lg overflow-x-auto">
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead class="excel-table-header">
+                                        <tr>
+                                                    <th class="px-4 py-3 text-left">Title</th>
+                                                    <th class="px-4 py-3 text-left">Test Steps</th>
+                                                    <th class="px-4 py-3 text-left">Expected Result</th>
+                                                </tr>
+                                    </thead>
+                                    <tbody id="gen-results-body" class="text-xs divide-y divide-gray-100"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- LIBRARY TAB -->
+                <section id="pane-library" class="tab-pane hidden">
+                    <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm flex space-x-4 mb-6">
+                        <div class="relative flex-grow">
+                            <input type="text" id="lib-search" class="w-full pl-9 pr-4 py-2 text-sm border border-gray-300 rounded-md" placeholder="Search library...">
+                            <svg class="w-4 h-4 absolute left-3 top-2.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        </div>
+                        <select id="prefix-filter" class="text-sm border border-gray-300 rounded-md px-3">
+                            <option value="all">All Prefixes</option>
+                            <option value="UAT-Modeling-Decision">UAT-Modeling-Decision</option>
+                            <option value="UAT-Modeling-RuleFamily">UAT-Modeling-RuleFamily</option>
+                            <option value="UAT-Testing-Decision">UAT-Testing-Decision</option>
+                            <option value="UAT-Repo-Assets">UAT-Repo-Assets</option>
+                        </select>
+                        <button id="export-csv" class="ml-3 px-3 py-2 bg-gray-100 text-sm rounded-md hover:bg-gray-200">Export CSV</button>
+                    </div>
+
+                    <div class="bg-white border border-gray-200 rounded-lg shadow-sm">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50 text-xs font-bold text-gray-500 uppercase">
+                                <tr>
+                                        <th class="px-6 py-4 text-left">Test Case Title</th>
+                                        <th class="px-6 py-4 text-left">Test Steps</th>
+                                        <th class="px-6 py-4 text-left">Expected Result</th>
+                                        <th class="px-6 py-4 text-left">Labels</th>
+                                        <th class="px-6 py-4 text-left">Automation State</th>
+                                        <th class="px-6 py-4 text-left">Test Case Status</th>
+                                        <th class="px-6 py-4 text-left">Created in Sprint</th>
+                                        <th class="px-6 py-4 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="library-table-body" class="text-sm divide-y divide-gray-100">
+                                <!-- Pre-seeded data -->
+                                <tr data-prefix="UAT-Modeling-Decision">
+                                    <td class="px-6 py-4 font-medium text-blue-700">UAT-Modeling-Decision, Update Event, Verify</td>
+                                    <td class="px-6 py-4">1) Submit update event<br>2) Verify persistence</td>
+                                    <td class="px-6 py-4">System should validate update event flows and persist changes.</td>
+                                    <td class="px-6 py-4"></td>
+                                    <td class="px-6 py-4 text-xs italic text-gray-500">Not Automated</td>
+                                    <td class="px-6 py-4"></td>
+                                    <td class="px-6 py-4"></td>
+                                    <td class="px-6 py-4 text-right">
+                                        <button class="view-btn text-blue-600 hover:underline font-bold text-xs">View/Edit</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- JIRA INTEGRATION TAB -->
+                <section id="pane-jira" class="tab-pane hidden">
+                    <div class="max-w-4xl mx-auto">
+                        <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
+                            <h1 class="text-xl font-bold">🔗 Jira Integration</h1>
+                            <p class="text-sm text-gray-500 mb-4">Configure Jira connection to push test cases.</p>
+                            <form id="jira-form" class="space-y-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 mb-1">Jira Project Key *</label>
+                                    <input id="jiraProjectKey" class="w-full border-gray-300 rounded p-2" placeholder="e.g., QA" required>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 mb-1">Jira Instance URL *</label>
+                                    <input id="jiraUrl" type="url" class="w-full border-gray-300 rounded p-2" placeholder="https://your-domain.atlassian.net" required>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-500 mb-1">Jira API Token / Password *</label>
+                                    <input id="jiraToken" type="password" class="w-full border-gray-300 rounded p-2" placeholder="Your Jira API token" required>
+                                </div>
+                                <div class="flex justify-end">
+                                    <button type="submit" class="btn-primary px-4 py-2 rounded font-bold">Connect to Jira</button>
+                                </div>
+                            </form>
+                            <div id="jiraResult" class="mt-4"></div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- VIEW/EDIT MODAL -->
+    <div id="edit-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+        <div class="modal-backdrop fixed inset-0"></div>
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl z-10 overflow-hidden animate-in zoom-in duration-200">
+            <div class="p-6 border-b border-gray-200 flex justify-between items-center">
+                <h3 class="text-lg font-bold">Edit Test Case</h3>
+                <button id="close-modal" class="text-gray-400 hover:text-gray-600 font-bold text-2xl">&times;</button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Title</label>
+                    <input type="text" id="edit-title" class="w-full border-gray-300 rounded p-2 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Test Steps</label>
+                    <textarea id="edit-steps" rows="3" class="w-full border-gray-300 rounded p-2 text-sm"></textarea>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Expected Result</label>
+                    <textarea id="edit-expected" rows="3" class="w-full border-gray-300 rounded p-2 text-sm"></textarea>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Labels</label>
+                        <input type="text" id="edit-labels" class="w-full border-gray-300 rounded p-2 text-sm" placeholder="(leave blank unless instructed)">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Automation Status</label>
+                        <select id="edit-auto" class="w-full border-gray-300 rounded p-2 text-sm">
+                            <option>Not Automated</option>
+                            <option>Automated</option>
+                            <option>In Progress</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Test Case Status</label>
+                        <input type="text" id="edit-status" class="w-full border-gray-300 rounded p-2 text-sm" placeholder="(leave blank unless specified)">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Created in Sprint</label>
+                        <input type="text" id="edit-sprint" class="w-full border-gray-300 rounded p-2 text-sm" placeholder="(leave blank unless specified)">
+                    </div>
+                </div>
+            </div>
+            <div class="p-6 bg-gray-50 flex justify-end space-x-3">
+                <button id="cancel-modal" class="px-4 py-2 text-sm text-gray-600">Cancel</button>
+                <button id="save-modal" class="btn-primary px-4 py-2 text-sm font-bold rounded">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // support both header tabs and sidebar links via `data-tab` attribute
+            const tabs = document.querySelectorAll('[data-tab]');
+            const panes = document.querySelectorAll('.tab-pane');
+            const libTableBody = document.getElementById('library-table-body');
+            const prefixFilter = document.getElementById('prefix-filter');
+            const modal = document.getElementById('edit-modal');
+            const genTrigger = document.getElementById('trigger-generate');
+            const genOutput = document.getElementById('gen-output-container');
+            const genResultsBody = document.getElementById('gen-results-body');
+            const commitBtn = document.getElementById('save-to-library');
+            
+            const addFileBtn = document.getElementById('add-file-btn');
+            const fileInput = document.getElementById('file-input');
+            const fileList = document.getElementById('file-list');
+
+            let attachedFiles = [];
+            let currentEditingRow = null;
+
+            // 1. FILE UPLOAD LOGIC
+            addFileBtn.onclick = () => fileInput.click();
+
+            fileInput.onchange = (e) => {
+                const newFiles = Array.from(e.target.files);
+                attachedFiles = [...attachedFiles, ...newFiles];
+                renderFileList();
+            };
+
+            function renderFileList() {
+                if (attachedFiles.length === 0) {
+                    fileList.innerHTML = '<p class="text-[10px] text-gray-400 italic">No files attached for analysis.</p>';
+                    return;
+                }
+                fileList.innerHTML = attachedFiles.map((file, idx) => `
+                    <div class="file-pill flex items-center justify-between px-2 py-1.5 rounded border border-gray-200 text-[11px]">
+                        <div class="flex items-center overflow-hidden">
+                            <svg class="w-3.5 h-3.5 text-gray-400 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"></path></svg>
+                            <span class="truncate text-gray-600 font-medium">${file.name}</span>
+                        </div>
+                        <button onclick="removeFile(${idx})" class="ml-2 text-gray-400 hover:text-red-500">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
+                    </div>
+                `).join('');
+            }
+
+            window.removeFile = (idx) => {
+                attachedFiles.splice(idx, 1);
+                renderFileList();
+            };
+
+            // 2. TAB NAVIGATION
+            tabs.forEach(el => {
+                el.addEventListener('click', (evt) => {
+                    evt.preventDefault();
+                    const name = el.dataset.tab;
+
+                    // clear header tab active state
+                    document.querySelectorAll('.tab-link').forEach(t => t.classList.remove('tab-active','text-gray-900'));
+                    // clear sidebar active state
+                    document.querySelectorAll('.sidebar-link').forEach(s => s.classList.remove('active'));
+
+                    // set active on clicked element
+                    if (el.classList.contains('tab-link')) {
+                        el.classList.add('tab-active','text-gray-900');
+                    }
+                    if (el.classList.contains('sidebar-link')) {
+                        el.classList.add('active');
+                    }
+
+                    // hide all panes and show target pane
+                    panes.forEach(p => p.classList.add('hidden'));
+                    const target = document.getElementById(`pane-${name}`);
+                    if (target) target.classList.remove('hidden');
+                });
+            });
+
+            // 3. GENERATION LOGIC (WITH FILE CONTEXT)
+            genTrigger.onclick = () => {
+                const btnText = document.getElementById('btn-text');
+                const loader = document.getElementById('btn-loader');
+                const analysisBadge = document.getElementById('analysis-badge');
+                
+                genTrigger.disabled = true;
+                loader.classList.remove('hidden');
+                btnText.textContent = attachedFiles.length > 0 ? "Analyzing Files..." : "Generating...";
+
+                setTimeout(() => {
+                    genTrigger.disabled = false;
+                    loader.classList.add('hidden');
+                    btnText.textContent = "Generate Scenarios";
+                    genOutput.classList.remove('hidden');
+                    
+                    const prefix = document.getElementById('prefix-select').value;
+                    
+                    if (attachedFiles.length > 0) {
+                        analysisBadge.classList.remove('hidden');
+                        genResultsBody.innerHTML = `
+                            <tr>
+                                <td class="px-4 py-3 font-bold text-blue-800">${prefix}, File Logic, Data Validation</td>
+                                <td class="px-4 py-3 text-sm text-gray-700">1) Upload ${attachedFiles[0].name} to the system<br>2) Run data validation flow<br>3) Observe validation results</td>
+                                        <td class="px-4 py-3 font-medium">1) File is accepted and stored.<br>2) Validation reports no schema errors.<br>3) Validation summary indicates compliance.</td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-3 font-bold text-blue-800">${prefix}, Complex Scenario, Verify</td>
+                                        <td class="px-4 py-3 text-sm text-gray-700">1) Prepare complex input matching business rules<br>2) Submit to processing endpoint<br>3) Verify outputs against rules</td>
+                                        <td class="px-4 py-3 font-medium">1) Processing succeeds for valid inputs.<br>2) Output contains expected business decisions.<br>3) No rule violations are reported.</td>
+                            </tr>
+                        `;
+                    } else {
+                        analysisBadge.classList.add('hidden');
+                        genResultsBody.innerHTML = `
+                            <tr>
+                                <td class="px-4 py-3 font-bold text-blue-800">${prefix}, Generic Logic, Verify</td>
+                                <td class="px-4 py-3 text-sm text-gray-700">1) Provide input based on requirement context<br>2) Execute validation<br>3) Confirm validation outcome</td>
+                                        <td class="px-4 py-3 font-medium">1) Input accepted by validation.<br>2) Validation returns expected status.<br>3) Any failures are reported with clear messages.</td>
+                            </tr>
+                        `;
+                    }
+                    genOutput.scrollIntoView({ behavior: 'smooth' });
+                }, 1500);
+            };
+
+            // 6. JIRA FORM HANDLER (basic local config)
+            const jiraForm = document.getElementById('jira-form');
+            if (jiraForm) {
+                jiraForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const resultDiv = document.getElementById('jiraResult');
+                    const projectKey = document.getElementById('jiraProjectKey').value.trim();
+                    const jiraUrl = document.getElementById('jiraUrl').value.trim();
+                    const jiraToken = document.getElementById('jiraToken').value;
+                    if (!projectKey || !jiraUrl || !jiraToken) {
+                        resultDiv.innerHTML = '<div class="text-sm text-red-600">Please fill all required fields.</div>';
+                        return;
+                    }
+                    resultDiv.innerHTML = '<div class="text-sm text-blue-600">⏳ Saving Jira configuration...</div>';
+                    // store config locally; server-side integration uses API endpoints
+                    localStorage.setItem('jiraConfig', JSON.stringify({ projectKey, jiraUrl, jiraToken }));
+                    setTimeout(() => {
+                        resultDiv.innerHTML = '<div class="text-sm text-green-600">✓ Jira configuration saved locally. You can now push test cases.</div>';
+                    }, 600);
+                });
+            }
+
+            // 4. LIBRARY COMMIT & FILTERS (Same as previous version)
+            commitBtn.onclick = () => {
+                const rows = genResultsBody.querySelectorAll('tr');
+                const prefix = document.getElementById('prefix-select').value;
+
+                // Build a set of existing library keys (prefix + title) to avoid duplicates
+                const existing = new Set();
+                libTableBody.querySelectorAll('tr').forEach(r => {
+                    const p = r.dataset.prefix || '';
+                    const t = (r.querySelector('td:first-child') && r.querySelector('td:first-child').textContent || '').trim();
+                    existing.add(`${p}||${t}`);
+                });
+
+                let added = 0;
+                let skipped = 0;
+
+                rows.forEach(row => {
+                    const title = (row.querySelector('td:first-child') && row.querySelector('td:first-child').textContent || '').trim();
+                    const testSteps = (row.querySelector('td:nth-child(2)') && row.querySelector('td:nth-child(2)').innerHTML || '').trim();
+                    // preserve per-step expected results including <br>
+                    const expected = (row.querySelector('td:nth-child(3)') && row.querySelector('td:nth-child(3)').innerHTML || '').trim();
+                    const key = `${prefix}||${title}`;
+                    if (existing.has(key)) {
+                        skipped++;
+                        return;
+                    }
+                    existing.add(key);
+
+                    const newRow = document.createElement('tr');
+                    newRow.dataset.prefix = prefix;
+                    newRow.innerHTML = `
+                        <td class="px-6 py-4 font-medium text-blue-700">${title}</td>
+                        <td class="px-6 py-4">${testSteps}</td>
+                        <td class="px-6 py-4">${expected}</td>
+                        <td class="px-6 py-4"></td>
+                        <td class="px-6 py-4 text-xs italic text-gray-500">Not Automated</td>
+                        <td class="px-6 py-4"></td>
+                        <td class="px-6 py-4"></td>
+                        <td class="px-6 py-4 text-right">
+                            <button class="view-btn text-blue-600 hover:underline font-bold text-xs">View/Edit</button>
+                        </td>
+                    `;
+                    libTableBody.prepend(newRow);
+                    added++;
+                });
+
+                document.querySelector('[data-tab="library"]').click();
+                prefixFilter.value = "all";
+                prefixFilter.dispatchEvent(new Event('change'));
+
+                // Inform user about results
+                if (added === 0 && skipped > 0) {
+                    alert(`No new test cases were added — ${skipped} duplicate(s) skipped.`);
+                } else if (skipped > 0) {
+                    alert(`${added} test case(s) added to library, ${skipped} duplicate(s) skipped.`);
+                } else {
+                    alert(`${added} test case(s) added to library.`);
+                }
+            };
+
+            prefixFilter.onchange = () => {
+                const val = prefixFilter.value;
+                libTableBody.querySelectorAll('tr').forEach(row => {
+                    row.classList.toggle('hidden', val !== 'all' && row.dataset.prefix !== val);
+                });
+            };
+
+            // Export library table as CSV
+            const exportBtn = document.getElementById('export-csv');
+            exportBtn.onclick = () => {
+                const rows = Array.from(libTableBody.querySelectorAll('tr'));
+                if (rows.length === 0) {
+                    alert('Library is empty — nothing to export.');
+                    return;
+                }
+
+                // Build CSV rows in the exact required order:
+                // Test Case Title, Test Steps, Expected Result, Labels, Automation State, Test Case Status, Created in Sprint
+                const data = rows.map(r => {
+                    const title = (r.querySelector('td:nth-child(1)') && r.querySelector('td:nth-child(1)').textContent || '').trim();
+                    // keep steps as text with newlines converted from <br>
+                    const stepsEl = r.querySelector('td:nth-child(2)');
+                    const testSteps = stepsEl ? stepsEl.innerHTML.replace(/<br\s*\/?/gi, '\r\n').trim() : '';
+                    const expectedEl = r.querySelector('td:nth-child(3)');
+                    const expected = expectedEl ? expectedEl.innerHTML.replace(/<br\s*\/?/gi, '\r\n').trim() : '';
+                    const labels = (r.querySelector('td:nth-child(4)') && r.querySelector('td:nth-child(4)').textContent || '').trim();
+                    // Automation State must always be Not Automated per rules
+                    const auto = 'Not Automated';
+                    const status = (r.querySelector('td:nth-child(6)') && r.querySelector('td:nth-child(6)').textContent || '').trim();
+                    const sprint = (r.querySelector('td:nth-child(7)') && r.querySelector('td:nth-child(7)').textContent || '').trim();
+                    return [title, testSteps, expected, labels, auto, status, sprint];
+                });
+
+                const header = ['Test Case Title','Test Steps','Expected Result','Labels','Automation State','Test Case Status','Created in Sprint'];
+                const csvRows = [header, ...data].map(cols => cols.map(c => '"' + String(c).replace(/"/g, '""') + '"').join(','));
+                const csvContent = csvRows.join('\r\n');
+
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'testcases-library.csv';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                URL.revokeObjectURL(url);
+            };
+
+            // 5. VIEW/EDIT LOGIC
+            document.body.addEventListener('click', (e) => {
+                if (e.target.classList.contains('view-btn')) {
+                    currentEditingRow = e.target.closest('tr');
+                    document.getElementById('edit-title').value = currentEditingRow.querySelector('td:nth-child(1)').textContent.trim();
+                    document.getElementById('edit-steps').value = (currentEditingRow.querySelector('td:nth-child(2)') && currentEditingRow.querySelector('td:nth-child(2)').innerHTML.trim().replace(/<br\s*\/?/gi,'\n')) || '';
+                    document.getElementById('edit-expected').value = (currentEditingRow.querySelector('td:nth-child(3)') && currentEditingRow.querySelector('td:nth-child(3)').innerHTML.trim().replace(/<br\s*\/?/gi,'\n')) || '';
+                    document.getElementById('edit-labels').value = (currentEditingRow.querySelector('td:nth-child(4)') && currentEditingRow.querySelector('td:nth-child(4)').textContent.trim()) || '';
+                    document.getElementById('edit-auto').value = (currentEditingRow.querySelector('td:nth-child(5)') && currentEditingRow.querySelector('td:nth-child(5)').textContent.trim()) || 'Not Automated';
+                    document.getElementById('edit-status').value = (currentEditingRow.querySelector('td:nth-child(6)') && currentEditingRow.querySelector('td:nth-child(6)').textContent.trim()) || '';
+                    document.getElementById('edit-sprint').value = (currentEditingRow.querySelector('td:nth-child(7)') && currentEditingRow.querySelector('td:nth-child(7)').textContent.trim()) || '';
+                    modal.classList.remove('hidden');
+                }
+            });
+
+            document.getElementById('save-modal').onclick = () => {
+                if (!currentEditingRow) { modal.classList.add('hidden'); return; }
+                currentEditingRow.querySelector('td:nth-child(1)').textContent = document.getElementById('edit-title').value;
+                const stepsCell = currentEditingRow.querySelector('td:nth-child(2)');
+                if (stepsCell) stepsCell.innerHTML = document.getElementById('edit-steps').value.replace(/\n/g, '<br>');
+                const expectedCell = currentEditingRow.querySelector('td:nth-child(3)');
+                if (expectedCell) expectedCell.innerHTML = document.getElementById('edit-expected').value.replace(/\n/g, '<br>');
+                const labelsCell = currentEditingRow.querySelector('td:nth-child(4)');
+                if (labelsCell) labelsCell.textContent = document.getElementById('edit-labels').value;
+                const autoCell = currentEditingRow.querySelector('td:nth-child(5)');
+                if (autoCell) autoCell.textContent = document.getElementById('edit-auto').value;
+                const statusCell = currentEditingRow.querySelector('td:nth-child(6)');
+                if (statusCell) statusCell.textContent = document.getElementById('edit-status').value;
+                const sprintCell = currentEditingRow.querySelector('td:nth-child(7)');
+                if (sprintCell) sprintCell.textContent = document.getElementById('edit-sprint').value;
+                modal.classList.add('hidden');
+            };
+            
+            document.getElementById('close-modal').onclick = () => modal.classList.add('hidden');
+            document.getElementById('cancel-modal').onclick = () => modal.classList.add('hidden');
+        });
+    </script>
+</body>
+</html>

@@ -8,7 +8,7 @@
     <groupId>com.qaautomation</groupId>
     <artifactId>qa-automation-platform</artifactId>
     <version>1.0.0-SNAPSHOT</version>
-    <packaging>jar</packaging>
+    <packaging>war</packaging>
 
     <name>AI QA Automation Platform</name>
     <description>Agent-based system for converting requirements into test cases and automation scripts</description>
@@ -83,6 +83,13 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.30</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- When producing a WAR for external Tomcat, mark embedded Tomcat as provided -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-tomcat</artifactId>
             <scope>provided</scope>
         </dependency>
 
