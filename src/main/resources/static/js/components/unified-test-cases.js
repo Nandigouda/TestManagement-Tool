@@ -289,6 +289,7 @@ class UnifiedTestCasesComponent {
                 <strong style="font-size: 13px;">Test Cases (${this.filteredTestCases.length})</strong>
                 <div style="display: flex; gap: 8px;">
                     <button id="exportAllBtn" class="btn btn-secondary" style="padding: 5px 10px; font-size: 11px;">📥 Export</button>
+                    <button id="pushToJiraBtn" class="btn btn-primary" style="padding: 5px 10px; font-size: 11px; margin-left:6px; display: none;">🔗 Push to Jira</button>
                 </div>
             </div>
             <div style="overflow-x: auto; font-size: 12px;">
@@ -345,6 +346,12 @@ class UnifiedTestCasesComponent {
         // Setup checkbox event listeners
         this.setupCheckboxListeners();
 
+        // Push to Jira button handler
+        const pushBtn = document.getElementById('pushToJiraBtn');
+        if (pushBtn) {
+            pushBtn.addEventListener('click', () => this.handlePushToJira());
+        }
+
         // Setup View test case button listeners
         const viewButtons = document.querySelectorAll('.view-tc-btn');
         viewButtons.forEach(btn => {
@@ -386,6 +393,9 @@ class UnifiedTestCasesComponent {
         if (exportBtn) {
             exportBtn.addEventListener('click', () => this.exportFilteredTestCases());
         }
+
+        // Ensure push button visibility reflects current selection
+        this.updateGenerateCodeButtonVisibility();
     }
 
     setupCheckboxListeners() {
@@ -432,14 +442,105 @@ class UnifiedTestCasesComponent {
     updateGenerateCodeButtonVisibility() {
         const openCodeGenBtn = document.getElementById('openCodeGenModalBtn');
         const selectedCountLabel = document.getElementById('selectedCountLabel');
+        const pushBtn = document.getElementById('pushToJiraBtn');
         
         if (openCodeGenBtn) {
             const hasSelected = this.selectedTestCaseIds.size > 0;
             openCodeGenBtn.style.display = hasSelected ? 'block' : 'none';
         }
+        if (pushBtn) {
+            const hasSelected = this.selectedTestCaseIds.size > 0;
+            pushBtn.style.display = hasSelected ? 'inline-block' : 'none';
+        }
         
         if (selectedCountLabel) {
             selectedCountLabel.textContent = `${this.selectedTestCaseIds.size} selected`;
+        }
+    }
+
+    async handlePushToJira() {
+        if (this.selectedTestCaseIds.size === 0) {
+            alert('Please select at least one test case to push to Jira');
+            return;
+        }
+
+        // Load Jira config saved in localStorage (from Jira Integration form)
+        let jiraConfig = {};
+        try {
+            jiraConfig = JSON.parse(localStorage.getItem('jiraConfig') || '{}');
+        } catch (e) {
+            jiraConfig = {};
+        }
+
+        let projectKey = jiraConfig.projectKey || prompt('Enter Jira Project Key to push to:', '');
+        if (!projectKey) {
+            alert('Jira Project Key is required');
+            return;
+        }
+
+        const confirmMsg = `Push ${this.selectedTestCaseIds.size} test case(s) to Jira project ${projectKey}?`;
+        if (!confirm(confirmMsg)) return;
+
+        const payload = {
+            testCaseIds: Array.from(this.selectedTestCaseIds),
+            jiraProjectKey: projectKey
+        };
+
+        const btn = document.getElementById('pushToJiraBtn');
+        const origText = btn ? btn.textContent : null;
+        if (btn) { btn.disabled = true; btn.textContent = 'Pushing...'; }
+
+        try {
+            const resp = await fetch('/api/v1/integrations/jira/push', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            // Try to parse JSON; if response empty or not JSON, fall back to text
+            let data = null;
+            const contentType = resp.headers.get('content-type') || '';
+            if (contentType.includes('application/json')) {
+                data = await resp.json();
+            } else {
+                const txt = await resp.text();
+                data = txt ? { message: txt } : null;
+            }
+
+            if (!resp.ok) {
+                const err = data && (data.error || data.message) ? (data.error || data.message) : `HTTP ${resp.status}`;
+                throw new Error(err || 'Failed to push to Jira');
+            }
+
+            // Show simple results modal
+            const results = data.results || [];
+            let success = results.filter(r => r.status === 'SUCCESS').length;
+            let failed = results.length - success;
+
+            let html = `<div style="padding:16px; max-width:600px;">`;
+            html += `<h3 style="margin-top:0;">Jira Push Results</h3>`;
+            html += `<p>${success} succeeded, ${failed} failed</p>`;
+            if (results.length > 0) {
+                html += `<div style="max-height:300px; overflow:auto; margin-top:8px; font-size:13px;">`;
+                results.forEach(r => {
+                    html += `<div style="padding:6px; border-bottom:1px solid #eee;"><strong>${this.escapeHtml(r.testCaseId || '')}</strong> → <em>${this.escapeHtml(r.jiraIssueKey || r.status || '')}</em> ${r.errorMessage ? '<div style="color:#c00;">' + this.escapeHtml(r.errorMessage) + '</div>' : ''}</div>`;
+                });
+                html += `</div>`;
+            }
+            html += `</div>`;
+
+            const modal = document.createElement('div');
+            modal.id = 'jiraPushResultsModal';
+            modal.style.cssText = 'position:fixed; inset:0; background:rgba(0,0,0,0.4); display:flex; align-items:center; justify-content:center; z-index:9999;';
+            modal.innerHTML = `<div style="background:white; border-radius:8px; padding:12px;">${html}<div style="text-align:right; margin-top:12px;"><button id=closeJiraPushModal class=btn>Close</button></div></div>`;
+            document.body.appendChild(modal);
+            document.getElementById('closeJiraPushModal').addEventListener('click', () => modal.remove());
+
+        } catch (err) {
+            console.error('Push to Jira failed', err);
+            alert('Push to Jira failed: ' + (err.message || err));
+        } finally {
+            if (btn) { btn.disabled = false; btn.textContent = origText; }
         }
     }
 

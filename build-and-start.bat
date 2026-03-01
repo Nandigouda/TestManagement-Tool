@@ -1,58 +1,57 @@
 @echo off
-REM Build and start the QA Automation Platform
-REM Usage: build-and-start.bat
+REM Minimal runner: supports `start` and `stop` commands only.
+REM Usage:
+REM   build-and-start.bat start   -> build and run the app
+REM   build-and-start.bat stop    -> stop any process listening on port 8081
 
-echo.
-echo =========================================
-echo   QA Automation Platform - BUILD & START
-echo =========================================
-echo.
+if "%1"=="stop" goto stop
+if "%1"=="start" goto start
 
-set JAVA_HOME=C:\Program Files\Java\jdk-21
-set MAVEN_HOME=C:\Program Files\maven-mvnd-1.0.2-windows-amd64
+echo Usage: %~n0 start ^| stop
+exit /b 1
 
-REM Check Java
-if not exist "%JAVA_HOME%\bin\java.exe" (
-    echo ERROR: Java 21 not found
-    pause
-    exit /b 1
-)
-
-REM Check Maven
-if not exist "%MAVEN_HOME%\bin\mvnd.cmd" (
-    echo ERROR: Maven not found
-    pause
-    exit /b 1
-)
-
-REM Kill existing process
-echo Stopping any running instance...
-for /f "tokens=5" %%a in ('netstat -aon ^| findstr :8081 ^| findstr LISTENING') do (
-    taskkill /PID %%a /F /T >nul 2>&1
-)
-
-REM Build
-echo.
+:start
 echo Building application...
-echo.
-call "%MAVEN_HOME%\bin\mvnd.cmd" clean package -DskipTests -q
 
-if not exist "target\qa-automation-platform-1.0.0-SNAPSHOT.jar" (
-    echo ERROR: Build failed
-    pause
+REM Prefer bundled Maven in tools\apache-maven-3.9.6
+set "MAVEN=%~dp0tools\apache-maven-3.9.6\bin\mvn.cmd"
+if exist "%MAVEN%" (
+    call "%MAVEN%" clean package -DskipTests -q
+) else (
+    echo ERROR: mvn not found at %MAVEN%
     exit /b 1
 )
 
-echo.
-echo ✓ Build successful
-echo.
-echo Starting application...
-echo.
-echo Server will be available at: http://localhost:8081/api/v1
-echo.
-echo Press Ctrl+C to stop
-echo.
+REM Accept either WAR or JAR produced by the build
+if exist "target\qa-automation-platform-1.0.0-SNAPSHOT.war" (
+    set "ART=target\qa-automation-platform-1.0.0-SNAPSHOT.war"
+) else if exist "target\qa-automation-platform-1.0.0-SNAPSHOT.jar" (
+    set "ART=target\qa-automation-platform-1.0.0-SNAPSHOT.jar"
+) else (
+    echo ERROR: Build failed - no artifact found
+    exit /b 1
+)
 
-"%JAVA_HOME%\bin\java.exe" -jar "target\qa-automation-platform-1.0.0-SNAPSHOT.jar"
+echo Starting application using %ART%...
 
-pause
+REM Use JAVA_HOME if set, otherwise try common locations
+if defined JAVA_HOME (
+    set "JAVA=%JAVA_HOME%\bin\java.exe"
+) else if exist "C:\Program Files\Java\jdk-21\bin\java.exe" (
+    set "JAVA=C:\Program Files\Java\jdk-21\bin\java.exe"
+) else if exist "C:\Program Files\Java\jdk-17\bin\java.exe" (
+    set "JAVA=C:\Program Files\Java\jdk-17\bin\java.exe"
+) else (
+    echo ERROR: java not found; set JAVA_HOME
+    exit /b 1
+)
+
+"%JAVA%" -jar "%ART%"
+exit /b 0
+
+:stop
+echo Stopping any running instance on port 8081...
+for /f "tokens=5" %%a in ('netstat -aon ^| findstr :8081 ^| findstr LISTENING') do (
+    taskkill /PID %%a /F 1>nul 2>nul
+)
+exit /b 0

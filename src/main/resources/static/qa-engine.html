@@ -90,10 +90,31 @@
                                     <div>
                                         <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Prefix Label</label>
                                         <select id="prefix-select" class="w-full text-sm border-gray-300 rounded-md focus:ring-blue-500">
+                                            <option value="UAT-Additional-Information">UAT-Additional-Information</option>
+                                            <option value="UAT-Administration-Security">UAT-Administration-Security</option>
+                                            <option value="UAT-Administration-Settings">UAT-Administration-Settings</option>
                                             <option value="UAT-Modeling-Decision">UAT-Modeling-Decision</option>
+                                            <option value="UAT-Modeling-DecisionFlow">UAT-Modeling-DecisionFlow</option>
+                                            <option value="UAT-Modeling-FactType">UAT-Modeling-FactType</option>
+                                            <option value="UAT-Modeling-KnowledgeModel">UAT-Modeling-KnowledgeModel</option>
+                                            <option value="UAT-Modeling-KnowledgeSource">UAT-Modeling-KnowledgeSource</option>
+                                            <option value="UAT-Modeling-ModelAI">UAT-Modeling-ModelAI</option>
                                             <option value="UAT-Modeling-RuleFamily">UAT-Modeling-RuleFamily</option>
-                                            <option value="UAT-Testing-Decision">UAT-Testing-Decision</option>
                                             <option value="UAT-Repo-Assets">UAT-Repo-Assets</option>
+                                            <option value="UAT-Repo-DeployAssets">UAT-Repo-DeployAssets</option>
+                                            <option value="UAT-Repo-ModelingProjects">UAT-Repo-ModelingProjects</option>
+                                            <option value="UAT-Repo-ReleaseProjects">UAT-Repo-ReleaseProjects</option>
+                                            <option value="UAT-Repo-Tasks&amp;Governance">UAT-Repo-Tasks&amp;Governance</option>
+                                            <option value="UAT-Reports">UAT-Reports</option>
+                                            <option value="UAT-Search">UAT-Search</option>
+                                            <option value="UAT-Task-FactType">UAT-Task-FactType</option>
+                                            <option value="UAT-Task-Governance">UAT-Task-Governance</option>
+                                            <option value="UAT-Task-KnowledgeSource">UAT-Task-KnowledgeSource</option>
+                                            <option value="UAT-Testing-Decision">UAT-Testing-Decision</option>
+                                            <option value="UAT-Testing-DecisionFlow">UAT-Testing-DecisionFlow</option>
+                                            <option value="UAT-Testing-RuleFamily">UAT-Testing-RuleFamily</option>
+                                            <option value="UAT-Validation-Decision">UAT-Validation-Decision</option>
+                                            <option value="UAT-Validation-RuleFamily">UAT-Validation-RuleFamily</option>
                                         </select>
                                     </div>
 
@@ -159,19 +180,44 @@
                         </div>
                         <select id="prefix-filter" class="text-sm border border-gray-300 rounded-md px-3">
                             <option value="all">All Prefixes</option>
+                            <option value="UAT-Additional-Information">UAT-Additional-Information</option>
+                            <option value="UAT-Administration-Security">UAT-Administration-Security</option>
+                            <option value="UAT-Administration-Settings">UAT-Administration-Settings</option>
                             <option value="UAT-Modeling-Decision">UAT-Modeling-Decision</option>
+                            <option value="UAT-Modeling-DecisionFlow">UAT-Modeling-DecisionFlow</option>
+                            <option value="UAT-Modeling-FactType">UAT-Modeling-FactType</option>
+                            <option value="UAT-Modeling-KnowledgeModel">UAT-Modeling-KnowledgeModel</option>
+                            <option value="UAT-Modeling-KnowledgeSource">UAT-Modeling-KnowledgeSource</option>
+                            <option value="UAT-Modeling-ModelAI">UAT-Modeling-ModelAI</option>
                             <option value="UAT-Modeling-RuleFamily">UAT-Modeling-RuleFamily</option>
-                            <option value="UAT-Testing-Decision">UAT-Testing-Decision</option>
                             <option value="UAT-Repo-Assets">UAT-Repo-Assets</option>
+                            <option value="UAT-Repo-DeployAssets">UAT-Repo-DeployAssets</option>
+                            <option value="UAT-Repo-ModelingProjects">UAT-Repo-ModelingProjects</option>
+                            <option value="UAT-Repo-ReleaseProjects">UAT-Repo-ReleaseProjects</option>
+                            <option value="UAT-Repo-Tasks&amp;Governance">UAT-Repo-Tasks&amp;Governance</option>
+                            <option value="UAT-Reports">UAT-Reports</option>
+                            <option value="UAT-Search">UAT-Search</option>
+                            <option value="UAT-Task-FactType">UAT-Task-FactType</option>
+                            <option value="UAT-Task-Governance">UAT-Task-Governance</option>
+                            <option value="UAT-Task-KnowledgeSource">UAT-Task-KnowledgeSource</option>
+                            <option value="UAT-Testing-Decision">UAT-Testing-Decision</option>
+                            <option value="UAT-Testing-DecisionFlow">UAT-Testing-DecisionFlow</option>
+                            <option value="UAT-Testing-RuleFamily">UAT-Testing-RuleFamily</option>
+                            <option value="UAT-Validation-Decision">UAT-Validation-Decision</option>
+                            <option value="UAT-Validation-RuleFamily">UAT-Validation-RuleFamily</option>
                         </select>
                         <button id="export-csv" class="ml-3 px-3 py-2 bg-gray-100 text-sm rounded-md hover:bg-gray-200">Export CSV</button>
+                        <button id="push-to-jira" class="ml-3 px-3 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700" title="Push selected test cases to Jira">Push to Jira</button>
                     </div>
 
                     <div class="bg-white border border-gray-200 rounded-lg shadow-sm">
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50 text-xs font-bold text-gray-500 uppercase">
                                 <tr>
-                                        <th class="px-6 py-4 text-left">Test Case Title</th>
+                                    <th class="px-6 py-4 text-left" style="width:40px; text-align:center;">
+                                        <input type="checkbox" id="lib-select-all" style="cursor:pointer;">
+                                    </th>
+                                    <th class="px-6 py-4 text-left">Test Case Title</th>
                                         <th class="px-6 py-4 text-left">Test Steps</th>
                                         <th class="px-6 py-4 text-left">Expected Result</th>
                                         <th class="px-6 py-4 text-left">Labels</th>
@@ -183,7 +229,10 @@
                             </thead>
                             <tbody id="library-table-body" class="text-sm divide-y divide-gray-100">
                                 <!-- Pre-seeded data -->
-                                <tr data-prefix="UAT-Modeling-Decision">
+                                <tr data-prefix="UAT-Modeling-Decision" data-tc-id="seed-1">
+                                    <td class="px-6 py-4 text-center" style="width:40px;">
+                                        <input type="checkbox" class="lib-tc-select" data-tc-id="seed-1" style="cursor:pointer;">
+                                    </td>
                                     <td class="px-6 py-4 font-medium text-blue-700">UAT-Modeling-Decision, Update Event, Verify</td>
                                     <td class="px-6 py-4">1) Submit update event<br>2) Verify persistence</td>
                                     <td class="px-6 py-4">System should validate update event flows and persist changes.</td>
@@ -435,11 +484,13 @@
                 const rows = genResultsBody.querySelectorAll('tr');
                 const prefix = document.getElementById('prefix-select').value;
 
-                // Build a set of existing library keys (prefix + title) to avoid duplicates
+                // Build a set of existing library keys (prefix + normalized title) to avoid duplicates
                 const existing = new Set();
                 libTableBody.querySelectorAll('tr').forEach(r => {
-                    const p = r.dataset.prefix || '';
-                    const t = (r.querySelector('td:first-child') && r.querySelector('td:first-child').textContent || '').trim();
+                    const p = (r.dataset.prefix || '').trim();
+                    // library rows have checkbox in first cell; title is in second cell
+                    const titleEl = r.querySelector('td:nth-child(2)');
+                    const t = (titleEl && titleEl.textContent || '').trim().toLowerCase();
                     existing.add(`${p}||${t}`);
                 });
 
@@ -451,22 +502,27 @@
                     const testSteps = (row.querySelector('td:nth-child(2)') && row.querySelector('td:nth-child(2)').innerHTML || '').trim();
                     // preserve per-step expected results including <br>
                     const expected = (row.querySelector('td:nth-child(3)') && row.querySelector('td:nth-child(3)').innerHTML || '').trim();
-                    const key = `${prefix}||${title}`;
+                    // normalize title when checking for duplicates
+                    const key = `${(prefix||'').trim()}||${(title||'').trim().toLowerCase()}`;
                     if (existing.has(key)) {
                         skipped++;
                         return;
                     }
                     existing.add(key);
 
+                    const tcId = 'TC-' + Date.now() + '-' + Math.floor(Math.random()*1000);
                     const newRow = document.createElement('tr');
                     newRow.dataset.prefix = prefix;
+                    newRow.dataset.tcId = tcId;
                     newRow.innerHTML = `
+                        <td class="px-6 py-4 text-center" style="width:40px;">
+                            <input type="checkbox" class="lib-tc-select" data-tc-id="${tcId}" style="cursor:pointer;">
+                        </td>
                         <td class="px-6 py-4 font-medium text-blue-700">${title}</td>
                         <td class="px-6 py-4">${testSteps}</td>
                         <td class="px-6 py-4">${expected}</td>
                         <td class="px-6 py-4"></td>
                         <td class="px-6 py-4 text-xs italic text-gray-500">Not Automated</td>
-                        <td class="px-6 py-4"></td>
                         <td class="px-6 py-4"></td>
                         <td class="px-6 py-4 text-right">
                             <button class="view-btn text-blue-600 hover:underline font-bold text-xs">View/Edit</button>
@@ -474,8 +530,12 @@
                     `;
                     libTableBody.prepend(newRow);
                     added++;
+                    // ensure checkboxes wired
+                    setupLibraryCheckboxes();
                 });
 
+                // refresh available prefixes in the filter (new rows may have new prefixes)
+                refreshPrefixOptions();
                 document.querySelector('[data-tab="library"]').click();
                 prefixFilter.value = "all";
                 prefixFilter.dispatchEvent(new Event('change'));
@@ -497,6 +557,34 @@
                 });
             };
 
+            // Populate the prefix filter with all known prefixes (from library rows and prefix-select)
+            function refreshPrefixOptions() {
+                const set = new Set();
+                // collect from existing library rows
+                libTableBody.querySelectorAll('tr').forEach(r => {
+                    const p = (r.dataset.prefix || '').trim();
+                    if (p) set.add(p);
+                });
+                // collect from the prefix select used for generation
+                document.querySelectorAll('#prefix-select option').forEach(o => {
+                    const v = (o.value || '').trim(); if (v) set.add(v);
+                });
+
+                const prefixes = Array.from(set).sort();
+                // rebuild the filter dropdown (single-line select with dropdown)
+                const pf = document.getElementById('prefix-filter');
+                pf.innerHTML = '<option value="all">All Prefixes</option>' + prefixes.map(p => `<option value="${p}">${p}</option>`).join('');
+                // ensure it's a normal single-line select (remove size attribute)
+                pf.removeAttribute('size');
+                pf.title = `${prefixes.length} prefixes`;
+                console.log(`Prefix filter refreshed: ${prefixes.length} prefixes available.`);
+            }
+
+            // initial population
+            refreshPrefixOptions();
+            // wire library checkboxes and push button
+            setupLibraryCheckboxes();
+
             // Export library table as CSV
             const exportBtn = document.getElementById('export-csv');
             exportBtn.onclick = () => {
@@ -509,17 +597,18 @@
                 // Build CSV rows in the exact required order:
                 // Test Case Title, Test Steps, Expected Result, Labels, Automation State, Test Case Status, Created in Sprint
                 const data = rows.map(r => {
-                    const title = (r.querySelector('td:nth-child(1)') && r.querySelector('td:nth-child(1)').textContent || '').trim();
+                    // library row structure: 1=checkbox, 2=title, 3=steps, 4=expected, 5=labels, 6=automation, 7=status, 8=sprint
+                    const title = (r.querySelector('td:nth-child(2)') && r.querySelector('td:nth-child(2)').textContent || '').trim();
                     // keep steps as text with newlines converted from <br>
-                    const stepsEl = r.querySelector('td:nth-child(2)');
+                    const stepsEl = r.querySelector('td:nth-child(3)');
                     const testSteps = stepsEl ? stepsEl.innerHTML.replace(/<br\s*\/?/gi, '\r\n').trim() : '';
-                    const expectedEl = r.querySelector('td:nth-child(3)');
+                    const expectedEl = r.querySelector('td:nth-child(4)');
                     const expected = expectedEl ? expectedEl.innerHTML.replace(/<br\s*\/?/gi, '\r\n').trim() : '';
-                    const labels = (r.querySelector('td:nth-child(4)') && r.querySelector('td:nth-child(4)').textContent || '').trim();
+                    const labels = (r.querySelector('td:nth-child(5)') && r.querySelector('td:nth-child(5)').textContent || '').trim();
                     // Automation State must always be Not Automated per rules
-                    const auto = 'Not Automated';
-                    const status = (r.querySelector('td:nth-child(6)') && r.querySelector('td:nth-child(6)').textContent || '').trim();
-                    const sprint = (r.querySelector('td:nth-child(7)') && r.querySelector('td:nth-child(7)').textContent || '').trim();
+                    const auto = (r.querySelector('td:nth-child(6)') && r.querySelector('td:nth-child(6)').textContent || 'Not Automated').trim();
+                    const status = (r.querySelector('td:nth-child(7)') && r.querySelector('td:nth-child(7)').textContent || '').trim();
+                    const sprint = (r.querySelector('td:nth-child(8)') && r.querySelector('td:nth-child(8)').textContent || '').trim();
                     return [title, testSteps, expected, labels, auto, status, sprint];
                 });
 
@@ -537,6 +626,108 @@
                 a.remove();
                 URL.revokeObjectURL(url);
             };
+
+            // Setup checkbox handlers and Push to Jira wiring
+            function setupLibraryCheckboxes() {
+                const selectAll = document.getElementById('lib-select-all');
+                const pushBtn = document.getElementById('push-to-jira');
+
+                // attach listeners to each checkbox currently in table
+                const attach = () => {
+                    const boxes = libTableBody.querySelectorAll('.lib-tc-select');
+                    boxes.forEach(cb => {
+                        // avoid re-adding listeners
+                        if (cb._wired) return;
+                        cb.addEventListener('change', () => {
+                            const all = Array.from(libTableBody.querySelectorAll('.lib-tc-select'));
+                            const checked = all.filter(c => c.checked).length;
+                            if (selectAll) selectAll.checked = (checked > 0 && checked === all.length);
+                        });
+                        cb._wired = true;
+                    });
+                };
+
+                // Select-all checkbox
+                if (selectAll && !selectAll._wired) {
+                    selectAll.addEventListener('change', (e) => {
+                        const boxes = libTableBody.querySelectorAll('.lib-tc-select');
+                        boxes.forEach(cb => cb.checked = e.target.checked);
+                    });
+                    selectAll._wired = true;
+                }
+
+                // Push button
+                if (pushBtn && !pushBtn._wired) {
+                    pushBtn.addEventListener('click', async () => {
+                        const selected = Array.from(libTableBody.querySelectorAll('.lib-tc-select:checked'))
+                            .map(cb => cb.getAttribute('data-tc-id'))
+                            .filter(Boolean);
+
+                        if (selected.length === 0) {
+                            alert('Please select at least one test case to push to Jira');
+                            return;
+                        }
+
+                        let jiraConfig = {};
+                        try { jiraConfig = JSON.parse(localStorage.getItem('jiraConfig') || '{}'); } catch(e) { jiraConfig = {}; }
+                        let projectKey = jiraConfig.projectKey || prompt('Enter Jira Project Key to push to:', '');
+                        if (!projectKey) { alert('Jira Project Key is required'); return; }
+
+                        if (!confirm(`Push ${selected.length} test case(s) to Jira project ${projectKey}?`)) return;
+
+                        pushBtn.disabled = true; const origText = pushBtn.textContent; pushBtn.textContent = 'Pushing...';
+                        try {
+                            const resp = await fetch('/api/v1/integrations/jira/push', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ testCaseIds: selected, jiraProjectKey: projectKey })
+                            });
+
+                            let data = null;
+                            const contentType = resp.headers.get('content-type') || '';
+                            if (contentType.includes('application/json')) {
+                                data = await resp.json();
+                            } else {
+                                const txt = await resp.text();
+                                data = txt ? { message: txt } : null;
+                            }
+
+                            if (!resp.ok) {
+                                throw new Error(data && (data.error || data.message) ? (data.error || data.message) : `HTTP ${resp.status}`);
+                            }
+
+                            const results = data.results || [];
+                            const success = results.filter(r => r.status === 'SUCCESS').length;
+                            const failed = results.length - success;
+                            let html = `<div style="padding:16px; max-width:600px;">`;
+                            html += `<h3 style="margin-top:0;">Jira Push Results</h3>`;
+                            html += `<p>${success} succeeded, ${failed} failed</p>`;
+                            if (results.length > 0) {
+                                html += `<div style="max-height:300px; overflow:auto; margin-top:8px; font-size:13px;">`;
+                                results.forEach(r => {
+                                    html += `<div style="padding:6px; border-bottom:1px solid #eee;"><strong>${(r.testCaseId||'')}</strong> → <em>${(r.jiraIssueKey||r.status||'')}</em> ${r.errorMessage? '<div style="color:#c00;">'+r.errorMessage+'</div>' : ''}</div>`;
+                                });
+                                html += `</div>`;
+                            }
+                            html += `</div>`;
+                            const modal = document.createElement('div');
+                            modal.style.cssText = 'position:fixed; inset:0; background:rgba(0,0,0,0.4); display:flex; align-items:center; justify-content:center; z-index:9999;';
+                            modal.innerHTML = `<div style="background:white; border-radius:8px; padding:12px;">${html}<div style="text-align:right; margin-top:12px;"><button id=closeJiraPushModal class=btn>Close</button></div></div>`;
+                            document.body.appendChild(modal);
+                            document.getElementById('closeJiraPushModal').addEventListener('click', () => modal.remove());
+                        } catch (err) {
+                            console.error('Push to Jira failed', err);
+                            alert('Push to Jira failed: ' + (err.message || err));
+                        } finally {
+                            pushBtn.disabled = false; pushBtn.textContent = origText;
+                        }
+                    });
+                    pushBtn._wired = true;
+                }
+
+                // attach initially
+                attach();
+            }
 
             // 5. VIEW/EDIT LOGIC
             document.body.addEventListener('click', (e) => {

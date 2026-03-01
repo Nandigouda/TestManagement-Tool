@@ -14,7 +14,7 @@ public class CustomErrorController implements ErrorController {
 
     @GetMapping
     public String handleError() {
-        return "forward:/static/index.html";
+        return "forward:/qa-engine.html";
     }
 
     public String getErrorPath() {

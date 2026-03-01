@@ -7,6 +7,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
 import java.util.*;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
+import java.net.URI;
+import java.util.Base64;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Jira/Zephyr Integration Agent - Maps test cases to Jira and pushes them.
@@ -194,12 +201,78 @@ public class JiraIntegrationAgent implements Agent {
         String jiraApiToken,
         String idempotencyKey) throws Exception {
 
-        // TODO: Implement actual REST call using RestClient
-        // This is a placeholder for the actual API integration
-        log.info("Would call Jira API at {}/rest/api/3/issue with payload: {}", jiraBaseUrl, payload);
+        // Build JSON payload
+        String json = objectMapper.writeValueAsString(payload);
 
-        // For now, simulate success
-        return "TEST-" + System.currentTimeMillis();
+        // Determine username and token for Basic auth. Accept either:
+        //  - jiraApiToken in the form "email:apiToken"
+        //  - or set environment variable JIRA_USERNAME and pass jiraApiToken as the token
+        String username;
+        String token = jiraApiToken;
+
+        if (jiraApiToken != null && jiraApiToken.contains(":")) {
+            String[] parts = jiraApiToken.split(":", 2);
+            username = parts[0];
+            token = parts[1];
+        } else {
+            username = System.getenv("JIRA_USERNAME");
+        }
+
+        if (username == null || username.isEmpty() || token == null || token.isEmpty()) {
+            throw new IllegalArgumentException("Jira credentials not provided. Set JIRA_USERNAME env var and jiraApiToken, or provide 'email:apiToken' as jiraApiToken.");
+        }
+
+        String auth = username + ":" + token;
+        String basic = Base64.getEncoder().encodeToString(auth.getBytes(StandardCharsets.UTF_8));
+
+        String apiUrl = jiraBaseUrl;
+        if (apiUrl.endsWith("/")) {
+            apiUrl = apiUrl.substring(0, apiUrl.length() - 1);
+        }
+        apiUrl = apiUrl + "/rest/api/3/issue";
+
+        log.debug("Calling Jira API at {}", apiUrl);
+
+        HttpClient client = HttpClient.newBuilder()
+            .connectTimeout(Duration.ofSeconds(10))
+            .build();
+
+        HttpRequest.Builder reqBuilder = HttpRequest.newBuilder()
+            .uri(URI.create(apiUrl))
+            .header("Authorization", "Basic " + basic)
+            .header("Content-Type", "application/json")
+            .header("Accept", "application/json");
+
+        if (idempotencyKey != null && !idempotencyKey.isEmpty()) {
+            reqBuilder.header("Idempotency-Key", idempotencyKey);
+        }
+
+        HttpRequest request = reqBuilder
+            .POST(HttpRequest.BodyPublishers.ofString(json))
+            .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        int status = response.statusCode();
+        String body = response.body();
+
+        if (status == 201 || status == 200) {
+            // Jira returns created issue key in response JSON under "key"
+            try {
+                Map<String, Object> respMap = objectMapper.readValue(body, Map.class);
+                Object keyObj = respMap.get("key");
+                if (keyObj != null) {
+                    return keyObj.toString();
+                }
+            } catch (Exception e) {
+                log.warn("Failed to parse Jira response JSON: {}", e.getMessage());
+            }
+
+            // Fallback: return entire body trimmed
+            return body != null ? body.trim() : null;
+        }
+
+        throw new RuntimeException("Jira API returned status " + status + " - " + body);
     }
 
     /**

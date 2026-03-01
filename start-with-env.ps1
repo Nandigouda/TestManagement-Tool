@@ -25,6 +25,7 @@ if (Test-Path ".env") {
     Write-Host "Found .env file - loading variables" -ForegroundColor Yellow
     
     # Read .env file and set environment variables
+    $loadedCount = 0
     Get-Content .env | ForEach-Object {
         if ($_ -match '^\s*[^#]' -and $_ -match '=') {
             $parts = $_ -split '=', 2
@@ -33,17 +34,14 @@ if (Test-Path ".env") {
                 $value = $parts[1].Trim()
                 if ($key -and $value) {
                     [Environment]::SetEnvironmentVariable($key, $value, "Process")
-                    # Mask sensitive values in output
-                    if ($key -like "*KEY*" -or $key -like "*TOKEN*" -or $key -like "*SECRET*") {
-                        $displayValue = if ($value.Length -gt 4) { $value.Substring(0, 4) + "...***" } else { "***" }
-                        Write-Host "  OK - $key = $displayValue" -ForegroundColor Green
-                    } else {
-                        Write-Host "  OK - $key = $value" -ForegroundColor Green
-                    }
+                    # Do NOT print actual values to avoid leaking secrets; only show the key name
+                    Write-Host "  OK - Loaded: $key" -ForegroundColor Green
+                    $loadedCount++
                 }
             }
         }
     }
+    Write-Host "  Summary: Loaded $loadedCount environment variable(s)." -ForegroundColor Cyan
 } else {
     Write-Host "WARNING - .env file not found" -ForegroundColor Yellow
     Write-Host "  Create .env file for Azure OpenAI configuration" -ForegroundColor Yellow
@@ -66,10 +64,10 @@ if ($runningApp) {
 Write-Host "`nChecking port 8081..." -ForegroundColor Cyan
 $netstatOutput = netstat -aon | Select-String ":8081.*LISTENING" -ErrorAction SilentlyContinue
 if ($netstatOutput) {
-    $pid = $netstatOutput -split '\s+' | Select-Object -Last 1
-    if ($pid -match '^\d+$') {
+    $processId = $netstatOutput -split '\s+' | Select-Object -Last 1
+    if ($processId -match '^\d+$') {
         Write-Host "Stopping process on port 8081..." -ForegroundColor Yellow
-        Stop-Process -Id $pid -Force -ErrorAction SilentlyContinue
+        Stop-Process -Id $processId -Force -ErrorAction SilentlyContinue
         Start-Sleep -Seconds 1
     }
 }
@@ -77,11 +75,44 @@ if ($netstatOutput) {
 # Build application
 Write-Host "`nBuilding application..." -ForegroundColor Cyan
 $buildLog = @()
-& mvnd.cmd clean package -DskipTests 2>&1 | Tee-Object -Variable buildLog | Out-Null
 
-if (Test-Path "target\qa-automation-platform-1.0.0-SNAPSHOT.jar") {
+# Determine a JDK 17 to use for the build (do not change the runtime JAVA_HOME used to launch the app)
+$javaHomeForBuild = $null
+$projectJavaHome = [Environment]::GetEnvironmentVariable('PROJECT_JAVA_HOME', 'Process')
+if ($projectJavaHome -and (Test-Path (Join-Path $projectJavaHome 'bin\java.exe'))) {
+    $javaHomeForBuild = $projectJavaHome
+} elseif (Test-Path (Join-Path $PSScriptRoot 'tools\jdk17\bin\java.exe')) {
+    $javaHomeForBuild = (Resolve-Path (Join-Path $PSScriptRoot 'tools\jdk17')).Path
+} elseif (Test-Path 'C:\Program Files\Java\jdk-17\bin\java.exe') {
+    $javaHomeForBuild = 'C:\Program Files\Java\jdk-17'
+} else {
+    # Fallback to whatever JAVA_HOME is already set (may be JDK 21)
+    $javaHomeForBuild = $env:JAVA_HOME
+}
+
+Write-Host "  Using JAVA_HOME for build: $javaHomeForBuild" -ForegroundColor Yellow
+
+# Temporarily set JAVA_HOME for the mvn/mvnd invocation and restore afterwards
+$origJavaHome = $env:JAVA_HOME
+if ($javaHomeForBuild) { $env:JAVA_HOME = $javaHomeForBuild }
+try {
+    # Prefer the bundled mvn if present (it will respect JAVA_HOME). Fallback to mvnd.
+    $mvnCmdPath = Join-Path $PSScriptRoot 'tools\apache-maven-3.9.6\bin\mvn.cmd'
+    if (Test-Path $mvnCmdPath) { $mvnCmd = $mvnCmdPath } else { $mvnCmd = 'mvnd.cmd' }
+    Write-Host "  Maven command: $mvnCmd" -ForegroundColor Cyan
+    # Capture full build output to a file for debugging
+    $buildLogPath = Join-Path $PSScriptRoot 'build-script.log'
+    Write-Host "  Writing build log to: $buildLogPath" -ForegroundColor Cyan
+    & $mvnCmd clean package -DskipTests -e -X 2>&1 | Tee-Object -FilePath $buildLogPath
+} finally {
+    # restore original JAVA_HOME
+    if ($null -ne $origJavaHome) { $env:JAVA_HOME = $origJavaHome } else { Remove-Item Env:JAVA_HOME -ErrorAction SilentlyContinue }
+}
+
+ $artifactJar = Join-Path $PSScriptRoot 'target\qa-automation-platform-1.0.0-SNAPSHOT.jar'
+ $artifactWar = Join-Path $PSScriptRoot 'target\qa-automation-platform-1.0.0-SNAPSHOT.war'
+ if ((Test-Path $artifactJar) -or (Test-Path $artifactWar)) {
     Write-Host "`nOK - Build successful" -ForegroundColor Green
-    
     Write-Host "`n=========================================" -ForegroundColor Green
     Write-Host "  Starting QA Automation Platform" -ForegroundColor Green
     Write-Host "=========================================`n" -ForegroundColor Green
@@ -92,9 +123,10 @@ if (Test-Path "target\qa-automation-platform-1.0.0-SNAPSHOT.jar") {
     Write-Host "`nEnvironment:" -ForegroundColor Cyan
     Write-Host "  Azure OpenAI Enabled: $([Environment]::GetEnvironmentVariable('AZURE_OPENAI_ENABLED', 'Process'))" -ForegroundColor Yellow
     Write-Host "`nPress Ctrl+C to stop the application`n" -ForegroundColor Yellow
-    
-    & "$env:JAVA_HOME\bin\java.exe" -jar "target\qa-automation-platform-1.0.0-SNAPSHOT.jar"
-} else {
+
+    $artifactPath = if (Test-Path $artifactWar) { $artifactWar } else { $artifactJar }
+    & "$env:JAVA_HOME\bin\java.exe" -jar $artifactPath
+ } else {
     Write-Host "`nERROR - Build FAILED!" -ForegroundColor Red
     exit 1
-}
+ }

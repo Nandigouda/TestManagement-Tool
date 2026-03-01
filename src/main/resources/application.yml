@@ -1,6 +1,6 @@
 spring:
   application:
-    name: qa-automation-platform
+    name: qa-Engine
   main:
     web-application-type: servlet
   web:
