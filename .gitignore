@@ -68,3 +68,19 @@ api-keys.txt
 passwords.txt
 private-keys/
 *.keystore
+
+# Build and deployment scripts (local development only)
+build-and-start.*
+start.*
+stop.*
+start-with-env.*
+configure-azure.*
+chat-validation-report.*
+
+# Test and temporary files
+test-chat-*.ps1
+tmp_testcases*.json
+app_logs.txt
+app_output.txt
+app_run_latest*
+buildlog.txt

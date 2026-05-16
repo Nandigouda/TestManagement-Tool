@@ -1,8 +1,12 @@
 # QA Automation Platform
 
-AI-assisted QA platform for generating, storing, reviewing, exporting, and converting test cases into automation code.
+A comprehensive AI-assisted QA platform for generating, managing, and automating test cases. Built with Spring Boot and powered by Azure OpenAI.
 
-The application is a Spring Boot backend with a static browser UI. It uses Azure OpenAI or OpenAI for generation, PostgreSQL for persistence, Flyway for schema migrations, and local fallback vector search when pgvector is not installed.
+## Overview
+
+The QA Automation Platform is an enterprise-grade test case management system that leverages AI to accelerate test planning and automation. It provides an intuitive web interface for generating test cases from requirements, managing test libraries, and generating automation code for Selenium and Playwright.
+
+**Technology Stack**: Spring Boot 3.2.0 | PostgreSQL | Azure OpenAI | Java 17+ | Maven
 
 ## Features
 
@@ -21,92 +25,111 @@ The application is a Spring Boot backend with a static browser UI. It uses Azure
 | Area | Technology |
 | --- | --- |
 | Backend | Spring Boot 3.2.0 |
-| Java target | Java 17 |
-| Runtime used by scripts | JDK 21 at `C:\Program Files\Java\jdk-21` |
-| Build | Maven wrapper under `tools/apache-maven-3.9.6` or local Maven/Mvnd |
-| Database | PostgreSQL |
+| Java | Java 17+ |
+| Build | Maven 3.9.6 |
+| Database | PostgreSQL 12+ |
 | Migrations | Flyway |
 | ORM | Spring Data JPA / Hibernate |
-| AI | Azure OpenAI, with OpenAI fallback configuration |
-| Documents | Apache PDFBox, Apache POI |
-| Frontend | Static HTML, CSS, vanilla JavaScript, Tailwind CDN in development |
+| AI | Azure OpenAI (with OpenAI fallback) |
+| Document Processing | Apache PDFBox, Apache POI |
+| Frontend | HTML5, CSS3, Vanilla JavaScript |
+| Vector Search | pgvector (optional)
 
 ## Prerequisites
 
-- Java 17 or newer. The included PowerShell scripts currently expect JDK 21 at `C:\Program Files\Java\jdk-21`.
-- PostgreSQL running locally or reachable from this machine.
-- A database matching `DB_NAME` in `.env`.
-- Azure OpenAI credentials for AI generation, or OpenAI fallback credentials.
-- Windows PowerShell.
+- **Java 17+** (Java 21 recommended)
+- **PostgreSQL** 12+ running locally or accessible from your environment
+- **Azure OpenAI** API key or **OpenAI** API key for AI features
+- **Maven 3.9.6+** (included in `tools/apache-maven-3.9.6` or use local installation)
 
 ## Configuration
 
-Create a `.env` file in the project root. Use `.env.example` as the starting point:
+### Environment Variables
+
+Create a `.env` file in the project root:
 
 ```env
+# Database
 DB_HOST=localhost
 DB_PORT=5432
 DB_NAME=qa_automation_db
 DB_USER=postgres
-DB_PASSWORD=your_postgres_password
+DB_PASSWORD=your_secure_password
 
+# AI Configuration - Azure OpenAI
 AZURE_OPENAI_ENABLED=true
-AZURE_OPENAI_API_KEY=your-azure-api-key-here
-AZURE_OPENAI_ENDPOINT=https://your-resource-name.openai.azure.com
+AZURE_OPENAI_API_KEY=your-api-key
+AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com
 AZURE_OPENAI_DEPLOYMENT_GPT4=gpt4-turbo
 AZURE_OPENAI_DEPLOYMENT_EMBEDDING=text-embedding-3-small
 AZURE_OPENAI_API_VERSION=2024-02-15-preview
 
-OPENAI_API_KEY=sk-test-key
+# OR OpenAI (Fallback)
+OPENAI_API_KEY=sk-your-key
 
+# Jira Integration (Optional)
 JIRA_BASE_URL=https://your-domain.atlassian.net
-JIRA_API_TOKEN=
+JIRA_API_TOKEN=your-token
+
+# Server
+SERVER_PORT=8080
+SERVER_SERVLET_CONTEXT_PATH=/api/v1
 ```
 
-Runtime defaults are defined in:
+### Application Configuration
 
-- `src/main/resources/application.properties`
-- `src/main/resources/application.yml`
+Default settings in `src/main/resources/application.yml`:
+- Server Port: `8080`
+- Context Path: `/api/v1`
+- Upload Limit: `50MB`
+- Temp Directory: `./temp-files`
+- Database Migrations: `src/main/resources/db/migration/`
 
-Important defaults:
+## Build & Run
 
-- Server URL: `http://localhost:8081/api/v1`
-- Server port: `8081`
-- Context path: `/api/v1`
-- Flyway migrations: `src/main/resources/db/migration`
-- Upload temp directory: `./temp-files`
-- Max upload size: `50MB`
+### Setup Database
 
-## Run Locally
+```bash
+# Create database (if not exists)
+createdb qa_automation_db
 
-Build and start:
-
-```powershell
-.\build-and-start.ps1
+# Or use psql
+psql -U postgres -c "CREATE DATABASE qa_automation_db;"
 ```
 
-Start an already-built jar:
+### Build Application
 
-```powershell
-.\start.ps1
+```bash
+# Using Maven
+mvn clean package -DskipTests
+
+# Or with included Maven
+./tools/apache-maven-3.9.6/bin/mvn clean package -DskipTests
 ```
 
-Stop the app:
+### Run Application
 
-```powershell
-.\stop.ps1
+```bash
+# From JAR
+java -jar target/qa-automation-platform-1.0.0-SNAPSHOT.jar
+
+# Or using Maven
+mvn spring-boot:run
+
+# Or with included Maven
+./tools/apache-maven-3.9.6/bin/mvn spring-boot:run
 ```
 
-Manual Maven build:
+### Access Application
 
-```powershell
-.\tools\apache-maven-3.9.6\bin\mvn.cmd -q -DskipTests clean package
+Once running, open your browser:
+```
+http://localhost:8080/api/v1
 ```
 
-After startup, open:
-
-```text
-http://localhost:8081/api/v1
+Health check:
+```bash
+curl http://localhost:8080/api/v1/health/check
 ```
 
 ## Main Workflows
@@ -216,40 +239,83 @@ src/main/resources
 
 ## Notes
 
-- The app persists data in PostgreSQL. It is not an H2 in-memory application.
-- Flyway validates and applies database migrations on startup.
-- pgvector is optional in the current local setup. If the extension is unavailable, the health check may report `DEGRADED`, while PostgreSQL and Azure OpenAI can still be healthy.
-- Generated test cases should be reviewed before export, Jira push, or automation-code generation.
-- The Tailwind CDN warning in DevTools is expected for local development.
+- Data is persisted in PostgreSQL (not in-memory)
+- Flyway manages database schema versioning and migrations automatically
+- pgvector extension is optional; functionality works without it
+- Generated test cases should be reviewed before export or automation code generation
+- All sensitive configuration should use environment variables
+- No build scripts or test scripts are committed to the repository
 
 ## Troubleshooting
 
-Check whether the app is listening:
+### Database Issues
+```bash
+# Verify PostgreSQL is running
+psql -U postgres -c "\l"
 
-```powershell
-netstat -aon | Select-String ':8081.*LISTENING'
+# Check database exists
+psql -U postgres -c "SELECT datname FROM pg_database WHERE datname='qa_automation_db';"
+
+# View Flyway migrations
+psql -U postgres -d qa_automation_db -c "SELECT * FROM flyway_schema_history;"
 ```
 
-Check the latest logs:
+### Application Issues
+```bash
+# Check if app is running
+curl -s http://localhost:8080/api/v1/health/check | jq .
 
-```powershell
-Get-Content .\app_run_latest.log -Tail 120
-Get-Content .\app_run_latest.err.log -Tail 120
+# View application logs (if saved)
+tail -f app.log
+
+# Verify port is available
+netstat -tulpn | grep 8080  # Linux/Mac
+netstat -ano | findstr :8080  # Windows
 ```
 
-If `clean package` cannot delete the jar, stop the process using port `8081` and rebuild:
+### AI/API Issues
+- Verify Azure OpenAI or OpenAI API keys are correct
+- Check API quota and permissions
+- Verify network connectivity to API endpoints
+- Review Spring Boot logs for detailed error messages
 
-```powershell
-.\stop.ps1
-.\tools\apache-maven-3.9.6\bin\mvn.cmd -q -DskipTests clean package
+### Build Issues
+```bash
+# Clean Maven cache
+mvn clean
+
+# Verify Java version
+java -version
+
+# Rebuild from scratch
+mvn clean package -DskipTests
+
+# Skip tests if build fails
+mvn package -DskipTests
 ```
 
-Health check:
+## Security
 
-```powershell
-Invoke-RestMethod http://localhost:8081/api/v1/health/check
-```
+⚠️ **Important**: This repository does NOT commit:
+- API keys, credentials, or secrets
+- Database passwords
+- Private keys or certificates
+- Environment-specific configurations
+- Sensitive configuration files
 
-## License
+Use environment variables (see Configuration section) for all sensitive data.
 
-Private project. All rights reserved.
+## Contributing
+
+1. Create a feature branch from \main\
+2. Implement your changes following existing code patterns
+3. Ensure code compiles: \mvn clean compile\
+4. Test your changes: \mvn test\
+5. Commit with clear, descriptive messages
+6. Push and create a pull request
+
+## License & Repository
+
+**Repository**: https://github.com/Nandigouda/TestManagement-Tool
+
+For issues, questions, or contributions, please open an issue on GitHub.
