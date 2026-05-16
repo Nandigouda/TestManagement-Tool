@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QA Platform - Test Case Library</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/material-icons.css">
+    <style>
+        :root {
+            --primary-color: #0052cc;
+            --primary-hover: #0065ff;
+            --success-color: #36b37e;
+            --success-bg: #e3fcef;
+            --danger-color: #ff5630;
+            --danger-bg: #ffebe6;
+            --warning-color: #ffab00;
+        }
+        body { font-family: 'Inter', sans-serif; background-color: #f4f5f7; }
+        .sidebar-link.active { background-color: #e6f0ff; color: var(--primary-color); position: relative; }
+        .sidebar-link.active::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background-color: var(--primary-color); border-radius: 0 4px 4px 0; }
+        .tab-link { transition: all 150ms ease; border-bottom-width: 2px; }
+        .tab-link.tab-active { color: var(--primary-color); border-color: var(--primary-color); font-weight: 600; }
+        .btn-primary { background-color: var(--primary-color); }
+        .btn-primary:hover { background-color: var(--primary-hover); }
+        .priority-high { background-color: var(--danger-bg); color: var(--danger-color); border: 1px solid var(--danger-color); }
+        .priority-medium { background-color: #fff4d9; color: var(--warning-color); border: 1px solid var(--warning-color); }
+        .priority-low { background-color: #ebf6ff; color: var(--primary-color); border: 1px solid var(--primary-color); }
+        .spinner { border: 4px solid rgba(255, 255, 255, 0.3); border-top: 4px solid white; border-radius: 50%; width: 16px; height: 16px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        /* Resizable table styles */
+        .resizable-table-wrapper { overflow-x: auto; border: 1px solid #e5e7eb; border-radius: 6px; }
+        .resizable-table { width: 100%; border-collapse: collapse; background: white; table-layout: fixed; }
+        .resizable-table th, .resizable-table td { 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+            white-space: nowrap;
+            padding: 10px;
+            border-right: 1px solid #e5e7eb;
+            user-select: none;
+        }
+        .resizable-table th { 
+            background: #f9fafb; 
+            font-weight: 600; 
+            border-bottom: 2px solid #e5e7eb;
+            position: relative;
+        }
+        .resizable-table tr:hover { background-color: #f9fafb; }
+        .column-resizer {
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: transparent;
+            cursor: col-resize;
+            user-select: none;
+        }
+        .column-resizer:hover, .column-resizer.active { background: var(--primary-color); }
+        
+        /* Export button styles */
+        .export-btn {
+            padding: 8px 16px;
+            background-color: #0052cc;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: background-color 0.15s ease;
+        }
+        .export-btn:hover {
+            background-color: #0065ff;
+        }
+    </style>
+</head>
+<body class="min-h-screen antialiased">
+
+    <!-- Global Header (Top Navigation) -->
+    <header class="h-14 bg-white shadow-md border-b border-gray-200 sticky top-0 z-10 flex items-center justify-between px-4">
+        <div class="flex items-center space-x-4">
+            <div class="flex items-center cursor-pointer">
+                <svg class="w-6 h-6 text-indigo-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1v-3m-6.447-2.618a.5.5 0 010-.764L10.5 12l-1.947-2.618a.5.5 0 010-.764L10.5 6l-1.947-2.618a.5.5 0 010-.764L10.5 0l1.947 2.618a.5.5 0 010 .764L13.5 6l1.947 2.618a.5.5 0 010 .764L13.5 12l-1.947 2.618a.5.5 0 010 .764L13.5 18zM6 10H3a2 2 0 00-2 2v4a2 2 0 002 2h3m12-8h3a2 2 0 012 2v4a2 2 0 01-2 2h-3"></path></svg>
+                <span class="text-xl font-semibold text-gray-800">QA Platform</span>
+            </div>
+        </div>
+        <div class="flex items-center space-x-3">
+            <button class="text-gray-500 hover:bg-gray-100 p-2 rounded-full transition duration-150">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            </button>
+            <button class="text-gray-500 hover:bg-gray-100 p-2 rounded-full transition duration-150">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+            </button>
+            <button class="w-8 h-8 rounded-full bg-blue-500 text-white font-medium text-sm flex items-center justify-center">NN</button>
+        </div>
+    </header>
+
+    <!-- Main Content Layout -->
+    <div class="flex">
+        <!-- Left Sidebar (Navigation) -->
+        <aside class="w-56 bg-white flex-shrink-0 border-r border-gray-200 pt-6 h-[calc(100vh-3.5rem)] sticky top-14">
+            <nav class="space-y-1">
+                <a href="#" id="nav-test-cases" class="sidebar-link active flex items-center px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition duration-150" data-content="unified-test-cases-content">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    <span>Test Cases</span>
+                </a>
+                <a href="#" id="nav-chat" class="sidebar-link flex items-center px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 transition duration-150" data-content="chat-content">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+                    <span>Chat</span>
+                </a>
+                <a href="#" id="nav-jira-integration" class="sidebar-link flex items-center px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 transition duration-150" data-content="jira-integration-content">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    <span>Jira Integration</span>
+                </a>
+                <div class="px-4 pt-4 text-xs font-semibold uppercase text-gray-400">Reports</div>
+                <a href="#" id="nav-reports" class="sidebar-link flex items-center px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50 transition duration-150" data-content="reports-content">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m-4-5v5m-4-2v2m-2-1h10a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2v-4a2 2 0 012-2z"></path></svg>
+                    <span>Execution Summary</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Page Content Area -->
+        <main class="flex-grow p-8">
+            <!-- 1. Unified Test Cases Content -->
+            <div id="unified-test-cases-content" class="content-pane">
+                <!-- Header removed per request -->
+                <div class="border-b border-gray-200">
+                    <nav class="-mb-px flex space-x-8">
+                        <a href="#" id="tab-generate" class="tab-link py-2 px-1 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 text-sm font-medium" data-tab="generate">+ Generate</a>
+                        <a href="#" id="tab-library" class="tab-link py-2 px-1 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 text-sm font-medium" data-tab="library">Library</a>
+                    </nav>
+                </div>
+                <div id="tab-content-container">
+                    <div id="tab-generate-content">
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            <!-- File Upload Section -->
+                            <div class="lg:col-span-1">
+                                <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                                    <h3 class="text-sm font-semibold text-gray-700 mb-4">📄 Upload File</h3>
+                                    <div id="uploadArea" class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition duration-150">
+                                        <svg class="w-10 h-10 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                                        <p class="text-sm font-medium text-gray-700">Drag and drop your file here</p>
+                                        <p class="text-xs text-gray-500 mt-1">or click to browse</p>
+                                        <p class="text-xs text-gray-400 mt-2">PDF, DOCX, TXT, PPTX</p>
+                                        <input type="file" id="fileInput" accept=".pdf,.docx,.pptx,.txt" hidden>
+                                    </div>
+                                    <div id="uploadStatus" class="mt-3 text-sm text-gray-500"></div>
+                                </div>
+                            </div>
+
+                            <!-- Requirements & Metadata Section -->
+                            <div class="lg:col-span-2">
+                                <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                                    <h3 class="text-sm font-semibold text-gray-700 mb-4">✏️ Input Requirements</h3>
+                                    <form id="generate-form" class="space-y-4">
+                                        <div>
+                                            <label for="requirements" class="block text-sm font-medium text-gray-700 mb-2">Requirements & Acceptance Criteria</label>
+                                            <textarea id="requirements" rows="5" placeholder="Describe your requirements, feature specifications, or test scenarios here..." class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-3 border"></textarea>
+                                        </div>
+                                        <!-- User Guide Folder Selection -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-3">📁 User Guide Folders (Optional - Select Multiple)</label>
+                                            <div id="userGuideFoldersContainer" class="border border-gray-300 rounded-md p-3 bg-gray-50 space-y-3 max-h-64 overflow-y-auto">
+                                                <p class="text-xs text-gray-500 text-center py-2">Loading available folders...</p>
+                                            </div>
+                                            <p class="text-xs text-gray-500 mt-2">Select one or more folders to use their UI/workflow information for generating more accurate test cases</p>
+                                        </div>
+                                        <!-- Application and Module inputs removed per request -->
+                                        <button type="submit" id="generate-btn" class="btn-primary w-full text-white font-medium rounded-md shadow-sm transition duration-150 py-2">🚀 Generate Test Cases</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="tab-library-content" class="hidden">
+                        <div class="flex flex-col lg:flex-row gap-6">
+                            <div class="flex-grow">
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                    <div class="bg-white p-4 rounded-lg shadow border border-gray-100 text-center">
+                                        <div class="text-3xl font-bold text-gray-800">0</div>
+                                        <div class="text-sm text-gray-500">Test Cases</div>
+                                    </div>
+                                    <div class="bg-white p-4 rounded-lg shadow border border-gray-100 text-center">
+                                        <div class="text-3xl font-bold text-gray-800">0</div>
+                                        <div class="text-sm text-gray-500">Applications</div>
+                                    </div>
+                                    <div class="bg-white p-4 rounded-lg shadow border border-gray-100 text-center">
+                                        <div class="text-3xl font-bold text-gray-800">0</div>
+                                        <div class="text-sm text-gray-500">Modules</div>
+                                    </div>
+                                    <div class="bg-white p-4 rounded-lg shadow border border-gray-100 text-center">
+                                        <div class="text-3xl font-bold text-gray-800">0</div>
+                                        <div class="text-sm text-gray-500">Tags</div>
+                                    </div>
+                                </div>
+                                <!-- Filter functionality removed per request -->
+                                <!-- Library results container - will be populated by JavaScript -->
+                                <div id="libraryResultsContainer" class="bg-white p-6 rounded-lg shadow-md border border-gray-200 mt-6">
+                                    <div class="mb-4">
+                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                                            <h2 class="text-lg font-semibold text-gray-800">Test Cases</h2>
+                                            <div style="display: flex; gap: 8px; align-items: center;">
+                                                <span id="librarySelectedCount" class="text-sm text-gray-500">0 selected</span>
+                                                <button onclick="clearTestCaseLibrary()" class="export-btn" style="background-color: #dc2626;">Clear Library</button>
+                                                <button onclick="exportTableToExcel()" class="export-btn">Export to Excel</button>
+                                            </div>
+                                        </div>
+                                        <div class="resizable-table-wrapper">
+                                            <table class="resizable-table">
+                                                <thead>
+                                                    <tr style="background: #f9fafb; border-bottom: 2px solid #e5e7eb;">
+                                                        <th style="padding: 10px; text-align: left; min-width: 40px; position: relative;"><input type="checkbox" id="selectAllTestCases" class="rounded text-indigo-600"></th>
+                                                        <th style="padding: 10px; text-align: left; min-width: 180px; position: relative;">Title</th>
+                                                        <th style="padding: 10px; text-align: left; min-width: 150px; position: relative;">Steps</th>
+                                                        <th style="padding: 10px; text-align: left; min-width: 200px; position: relative;">Expected Result</th>
+                                                        <th style="padding: 10px; text-align: left; min-width: 120px; position: relative;">Automation</th>
+                                                        <th style="padding: 10px; text-align: left; min-width: 100px; position: relative;">Status</th>
+                                                        <th style="padding: 10px; text-align: left; min-width: 100px; position: relative;">Sprint</th>
+                                                        <th style="padding: 10px; text-align: right; min-width: 80px;">Action</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody></tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div id="paginationContainer" style="margin-top: 20px; text-align: center;"></div>
+                                </div>
+                            </div>
+                            <!-- Code Generation panel removed from Library view per request -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Jira Integration Content -->
+            <div id="jira-integration-content" class="content-pane hidden">
+                <div class="mb-6">
+                    <h1 class="text-3xl font-bold text-gray-800">Jira Integration</h1>
+                    <p class="text-gray-500 mt-1">Connect your QA Platform to Jira to sync test cases, report bugs, and track status.</p>
+                </div>
+                <div id="jira-notification" class="hidden mb-4 p-3 rounded-md transition duration-300 ease-in-out"></div>
+                <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200 mb-8">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Connection Status</h2>
+                    <div id="connection-status" class="flex items-center space-x-3 p-3 bg-red-50 border border-red-200 rounded-md">
+                        <svg id="status-icon" class="w-6 h-6 text-red-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>
+                        <p id="status-message" class="text-sm text-red-700">Not Connected. Please enter your Jira credentials below.</p>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-6">Jira Server Configuration</h2>
+                    <form id="jira-config-form" class="space-y-6">
+                        <div>
+                            <label for="jira-url" class="block text-sm font-medium text-gray-700">Jira Server URL</label>
+                            <input type="url" id="jira-url" value="https://qa-company.atlassian.net" placeholder="e.g., https://yourcompany.atlassian.net" class="p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm transition duration-150">
+                            <p class="mt-2 text-xs text-gray-500">Provide the base URL for your Jira instance (Cloud or Server).</p>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="jira-email" class="block text-sm font-medium text-gray-700">Email (Jira Username)</label>
+                                <input type="email" id="jira-email" value="user@company.com" placeholder="your.name@company.com" class="p-2 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm transition duration-150">
+                            </div>
+                            <div>
+                                <label for="jira-token" class="block text-sm font-medium text-gray-700">API Token</label>
+                                <input type="password" id="jira-token" value="sk_1a2b3c4d5e6f7g8h9i0j" placeholder="Paste your generated API Token here" class="p-2 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm transition duration-150">
+                                <p class="mt-2 text-xs text-gray-500">Generate a token in Jira's Account Security settings for better security than a password.</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="jira-project" class="block text-sm font-medium text-gray-700">Default Jira Project Key</label>
+                                <input type="text" id="jira-project" value="QA" placeholder="e.g., QA, PROJ" class="p-2 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm transition duration-150">
+                            </div>
+                            <div>
+                                <label for="jira-issue-type" class="block text-sm font-medium text-gray-700">Default Test Case Issue Type</label>
+                                <select id="jira-issue-type" class="p-2 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm transition duration-150"><option>Story</option><option>Task</option><option>Bug</option><option selected>Test Case (Custom)</option></select>
+                            </div>
+                        </div>
+                        <div class="pt-6 flex justify-end">
+                            <button type="submit" id="connect-jira-btn" class="btn-primary flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150">
+                                <span id="button-text">Connect to Jira</span>
+                                <div id="button-spinner" class="spinner ml-2 hidden"></div>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- 3. Chat Content -->
+            <div id="chat-content" class="content-pane hidden">
+                <div class="mb-6">
+                    <h1 class="text-3xl font-bold text-gray-800">💬 AI QA Chat</h1>
+                    <p class="text-gray-500 mt-1">Chat with our AI agent to generate test cases, analyze scenarios, and get QA guidance.</p>
+                </div>
+                <div class="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden" style="display: flex; flex-direction: row; height: calc(100vh - 250px); gap: 0;">
+                    <!-- Chat Messages Area -->
+                    <div style="flex: 1; display: flex; flex-direction: column;">
+                        <div id="chatMessagesArea" style="flex: 1; overflow-y: auto; padding: 16px; background: #f9fafb; border-bottom: 1px solid #e5e7eb;">
+                            <div class="text-center text-gray-500 py-8">
+                                <p class="text-sm">Start a conversation to generate test cases and get QA insights</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Chat Input Area -->
+                        <div style="padding: 16px; background: white; border-top: 1px solid #e5e7eb;">
+                            <!-- Uploaded Files Display -->
+                            <div id="uploadedFilesContainer" style="display: none; margin-bottom: 12px; padding: 10px; background: #f0f4ff; border-radius: 6px;">
+                                <div style="font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 8px;">📎 Attached Files:</div>
+                                <div id="uploadedFilesList" style="display: flex; flex-direction: column; gap: 6px;"></div>
+                            </div>
+                            
+                            <div style="display: flex; gap: 8px; align-items: center;">
+                                <!-- File Upload Button -->
+                                <button 
+                                    id="fileUploadBtn" 
+                                    title="Attach files (PDF, DOCX, Images, etc.)"
+                                    style="padding: 10px 12px; background-color: #f3f4f6; color: #374151; border: 1px solid #d1d5db; border-radius: 6px; cursor: pointer; font-size: 18px; transition: all 0.15s ease; display: flex; align-items: center; justify-content: center;"
+                                    onmouseover="this.style.backgroundColor='#e5e7eb'"
+                                    onmouseout="this.style.backgroundColor='#f3f4f6'"
+                                >
+                                    +
+                                </button>
+                                <input 
+                                    type="file" 
+                                    id="fileInput" 
+                                    style="display: none;" 
+                                    multiple
+                                    accept=".pdf,.docx,.doc,.txt,.jpg,.jpeg,.png,.gif,.pgf,.xlsx,.xls"
+                                />
+                                
+                                <input 
+                                    type="text" 
+                                    id="chatInput" 
+                                    placeholder="Describe your test scenario..." 
+                                    style="flex: 1; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px;"
+                                />
+                                <button 
+                                    id="chatSendBtn" 
+                                    style="padding: 10px 16px; background-color: #0052cc; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 14px; transition: background-color 0.15s ease;"
+                                    onmouseover="this.style.backgroundColor='#0065ff'"
+                                    onmouseout="this.style.backgroundColor='#0052cc'"
+                                >
+                                    Send
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- User Guides Sidebar -->
+                    <div style="width: 200px; padding: 16px; background: #f9fafb; border-left: 1px solid #e5e7eb; overflow-y: auto;">
+                        <div id="userGuidesCheckboxes" style="display: flex; flex-direction: column;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. Reports Content -->
+            <div id="reports-content" class="content-pane hidden">
+                <div class="mb-6">
+                    <h1 class="text-3xl font-bold text-gray-800">Execution Summary</h1>
+                    <p class="text-gray-500 mt-1">View the history and performance metrics for all test runs.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                    <p class="text-gray-500">Reports content coming soon...</p>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Core Scripts -->
+    <script src="js/export-utils.js"></script>
+    <script src="js/components/code-viewer.js"></script>
+    <script src="js/components/unified-test-cases.js"></script>
+    <script src="js/services/api.service.js"></script>
+    <script src="js/chat.js"></script>
+    <script src="js/jira-app.js"></script>
+    <script src="js/resizable-table.js"></script>
+
+    <!-- Test Case Modal -->
+    <div id="testCaseModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.5); z-index: 1000; overflow-y: auto;">
+        <div style="background-color: white; margin: 2rem auto; max-width: 600px; border-radius: 8px; padding: 2rem; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h2 id="modalTitle" style="font-size: 1.5rem; font-weight: bold; color: #1f2937;"></h2>
+                <button onclick="document.getElementById('testCaseModal').style.display='none'" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #6b7280;">&times;</button>
+            </div>
+            <div id="modalContent" style="color: #374151; line-height: 1.6;"></div>
+        </div>
+    </div>
+
+    <script>
+            let allTestCases = [];
+            let selectedTestCaseIds = new Set();
+            let currentPage = 1;
+            const pageSize = 10; // Changed from 5 to 10
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const sidebarLinks = document.querySelectorAll('.sidebar-link');
+            const contentPanes = document.querySelectorAll('.content-pane');
+            const tabLinks = document.querySelectorAll('.tab-link');
+            const tabContent = { 'generate': document.getElementById('tab-generate-content'), 'library': document.getElementById('tab-library-content') };
+
+            function showContent(contentId) {
+                contentPanes.forEach(pane => pane.classList.add('hidden'));
+                const selectedPane = document.getElementById(contentId);
+                if (selectedPane) selectedPane.classList.remove('hidden');
+                if (contentId === 'unified-test-cases-content') {
+                    loadTestCases();
+                }
+            }
+
+            function setActiveLink(activeLink) {
+                sidebarLinks.forEach(link => {
+                    link.classList.remove('active', 'text-gray-700');
+                    link.classList.add('text-gray-500');
+                });
+                activeLink.classList.add('active', 'text-gray-700');
+                activeLink.classList.remove('text-gray-500');
+            }
+
+            function switchTestCasesTab(tabId) {
+                tabLinks.forEach(link => link.classList.remove('tab-active'));
+                Object.values(tabContent).forEach(content => content.classList.add('hidden'));
+                const activeTabLink = document.querySelector(`.tab-link[data-tab="${tabId}"]`);
+                if (activeTabLink) activeTabLink.classList.add('tab-active');
+                const activeContent = tabContent[tabId];
+                if (activeContent) activeContent.classList.remove('hidden');
+                if (tabId === 'library') {
+                    loadTestCases();
+                }
+            }
+
+            async function loadTestCases() {
+                try {
+                    const response = await fetch('/api/v1/testcases');
+                    if (response.ok) {
+                        const data = await response.json();
+                        // Handle both array and wrapped response
+                        allTestCases = Array.isArray(data) ? data : (data.testCases || []);
+                        updateTestCaseTable(allTestCases);
+                        updateMetrics();
+                    } else {
+                        console.error('Failed to load test cases:', response.status);
+                    }
+                } catch (error) {
+                    console.error('Error loading test cases:', error);
+                }
+            }
+
+            function updateTestCaseTable(testCases) {
+                const tbody = document.querySelector('#tab-library-content tbody');
+                if (!tbody) return;
+                tbody.innerHTML = '';
+
+                if (testCases.length === 0) {
+                    removePagination();
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 2rem; color: #999;">No test cases found. Generate some test cases to get started!</td></tr>';
+                    updateTableHeader(0);
+                    return;
+                }
+
+                // Pagination: calculate slice
+                const totalItems = testCases.length;
+                const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+                if (currentPage > totalPages) currentPage = totalPages;
+                const startIdx = (currentPage - 1) * pageSize;
+                const endIdx = Math.min(startIdx + pageSize, totalItems);
+                const pageItems = testCases.slice(startIdx, endIdx);
+
+                pageItems.forEach(tc => {
+                    const row = document.createElement('tr');
+                    row.style.borderBottom = '1px solid #e5e7eb';
+                    // Prepare column values according to the required schema
+                    const title = tc.title || ('TC' + tc.id);
+                    const stepsArr = (tc.steps || []).map(s => (typeof s === 'object') ? (s.action || '') : s);
+                    const stepsPreview = stepsArr.slice(0, 2).join(' | ');
+                    const expected = (tc.expectedResults || []).slice(0, 1).join('; ') || '';
+                    const automationState = tc.automationState || 'Not Automated';
+                    const testCaseStatus = tc.status || '';
+                    const createdInSprint = tc.createdSprint || '';
+                    const isSelected = selectedTestCaseIds.has(tc.id);
+
+                    row.innerHTML = `
+                        <td style="padding: 10px; text-align: center; border-right: 1px solid #e5e7eb;"><input type="checkbox" class="test-case-select rounded text-indigo-600 focus:ring-indigo-500" data-test-case-id="${tc.id}" ${isSelected ? 'checked' : ''}></td>
+                        <td style="padding: 10px; color: #0052cc; font-weight: 600; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; border-right: 1px solid #e5e7eb;" title="${title}" onclick="showTestCaseModal('${tc.id}')">${title}</td>
+                        <td style="padding: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; border-right: 1px solid #e5e7eb;" title="${stepsPreview}">${stepsPreview}</td>
+                        <td style="padding: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; border-right: 1px solid #e5e7eb;" title="${expected}">${expected}</td>
+                        <td style="padding: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; border-right: 1px solid #e5e7eb;">${automationState}</td>
+                        <td style="padding: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; border-right: 1px solid #e5e7eb;">${testCaseStatus}</td>
+                        <td style="padding: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; border-right: 1px solid #e5e7eb;">${createdInSprint}</td>
+                        <td style="padding: 10px; text-align: right;"><button class="text-sm font-medium text-blue-600 hover:text-blue-800" onclick="showTestCaseModal('${tc.id}')">View</button></td>
+                    `;
+                    tbody.appendChild(row);
+                });
+
+                attachCheckboxListeners();
+                renderPagination(totalItems, totalPages);
+                // Update header count to reflect the currently displayed (filtered) set
+                updateTableHeader(testCases.length);
+            }
+
+            function renderPagination(totalItems, totalPages) {
+                // Remove existing pagination if any
+                removePagination();
+
+                if (totalPages <= 1) return; // no pagination needed
+
+                const container = document.createElement('div');
+                container.id = 'paginationContainer';
+                container.style.display = 'flex';
+                container.style.justifyContent = 'flex-end';
+                container.style.marginTop = '12px';
+
+                const ul = document.createElement('ul');
+                ul.style.listStyle = 'none';
+                ul.style.display = 'flex';
+                ul.style.gap = '6px';
+                ul.style.padding = '0';
+
+                const createPageBtn = (label, page, disabled) => {
+                    const li = document.createElement('li');
+                    const btn = document.createElement('button');
+                    btn.textContent = label;
+                    btn.disabled = !!disabled;
+                    btn.style.padding = '6px 10px';
+                    btn.style.border = '1px solid #e5e7eb';
+                    btn.style.borderRadius = '4px';
+                    btn.style.background = disabled ? '#f3f4f6' : 'white';
+                    btn.style.cursor = disabled ? 'default' : 'pointer';
+                    btn.addEventListener('click', () => {
+                        if (currentPage === page) return;
+                        currentPage = page;
+                        updateTestCaseTable(filterCurrentResults());
+                    });
+                    li.appendChild(btn);
+                    return li;
+                };
+
+                // Prev
+                ul.appendChild(createPageBtn('Prev', Math.max(1, currentPage - 1), currentPage === 1));
+
+                // Page numbers (show up to 7: first, prev, current +/-1, next, last)
+                const maxButtons = 7;
+                let startPage = Math.max(1, currentPage - 2);
+                let endPage = Math.min(totalPages, startPage + maxButtons - 1);
+                if (endPage - startPage < maxButtons - 1) {
+                    startPage = Math.max(1, endPage - maxButtons + 1);
+                }
+
+                for (let p = startPage; p <= endPage; p++) {
+                    const li = document.createElement('li');
+                    const btn = document.createElement('button');
+                    btn.textContent = String(p);
+                    btn.style.padding = '6px 10px';
+                    btn.style.border = '1px solid #e5e7eb';
+                    btn.style.borderRadius = '4px';
+                    btn.style.background = (p === currentPage) ? '#0052cc' : 'white';
+                    btn.style.color = (p === currentPage) ? 'white' : '#111827';
+                    btn.style.cursor = 'pointer';
+                    btn.addEventListener('click', () => {
+                        if (currentPage === p) return;
+                        currentPage = p;
+                        updateTestCaseTable(filterCurrentResults());
+                    });
+                    li.appendChild(btn);
+                    ul.appendChild(li);
+                }
+
+                // Next
+                ul.appendChild(createPageBtn('Next', Math.min(totalPages, currentPage + 1), currentPage === totalPages));
+
+                container.appendChild(ul);
+
+                const tableCard = document.querySelector('#tab-library-content .bg-white.p-6');
+                if (tableCard) {
+                    tableCard.appendChild(container);
+                }
+            }
+
+            function removePagination() {
+                const existing = document.getElementById('paginationContainer');
+                if (existing) existing.remove();
+            }
+
+            // Filters removed: return the full list
+            function filterCurrentResults() {
+                return allTestCases;
+            }
+
+            function updateTableHeader(count) {
+                const tableHeader = document.querySelector('#tab-library-content h2') || document.querySelector('#libraryResultsContainer h2');
+                if (tableHeader) {
+                    tableHeader.textContent = `Test Cases (${count})`;
+                }
+            }
+
+            function updateMetrics() {
+                // Use the global allTestCases for metrics and for populating filter dropdowns
+                const src = Array.isArray(allTestCases) ? allTestCases : [];
+                const apps = new Set(src.map(tc => tc.appName).filter(Boolean)).size;
+                const modules = new Set(src.map(tc => tc.module).filter(Boolean)).size;
+                const tags = new Set(src.flatMap(tc => (tc.tags || [])).filter(Boolean)).size;
+
+                const metricsContainer = document.querySelector('#tab-library-content .grid-cols-2');
+                if (metricsContainer) {
+                    // Find the four metric cards inside the grid and set their numeric values
+                    const cardDivs = metricsContainer.querySelectorAll(':scope > div');
+                    if (cardDivs[0]) {
+                        const el = cardDivs[0].querySelector('div');
+                        if (el) el.textContent = src.length;
+                    }
+                    if (cardDivs[1]) {
+                        const el = cardDivs[1].querySelector('div');
+                        if (el) el.textContent = apps || '0';
+                    }
+                    if (cardDivs[2]) {
+                        const el = cardDivs[2].querySelector('div');
+                        if (el) el.textContent = modules || '0';
+                    }
+                    if (cardDivs[3]) {
+                        const el = cardDivs[3].querySelector('div');
+                        if (el) el.textContent = tags || '0';
+                    }
+                }
+
+                // Filter UI removed, no dropdowns to populate
+            }
+
+            function attachCheckboxListeners() {
+                const table = document.querySelector('#tab-library-content .resizable-table');
+                const selectedCount = document.getElementById('selected-count');
+                const generateCodeButton = document.querySelector('.lg\\:w-72 button') || document.getElementById('generate-code-btn');
+                const headerCheckbox = document.getElementById('selectAllTestCases');
+                const rowCheckboxes = document.querySelectorAll('#tab-library-content tbody .test-case-select');
+
+                if (headerCheckbox) {
+                    headerCheckbox.checked = rowCheckboxes.length > 0 && Array.from(rowCheckboxes).every(cb => cb.checked);
+                    headerCheckbox.addEventListener('change', () => {
+                        rowCheckboxes.forEach(checkbox => {
+                            checkbox.checked = headerCheckbox.checked;
+                            const testCaseId = checkbox.getAttribute('data-test-case-id');
+                            if (headerCheckbox.checked) {
+                                selectedTestCaseIds.add(testCaseId);
+                            } else {
+                                selectedTestCaseIds.delete(testCaseId);
+                            }
+                        });
+                        updateSelectionState();
+                    });
+                }
+
+                if (table) {
+                    const checkboxes = table.querySelectorAll('tbody .test-case-select');
+                    checkboxes.forEach(checkbox => {
+                        checkbox.addEventListener('change', () => {
+                            const testCaseId = checkbox.getAttribute('data-test-case-id');
+                            if (checkbox.checked) {
+                                selectedTestCaseIds.add(testCaseId);
+                            } else {
+                                selectedTestCaseIds.delete(testCaseId);
+                            }
+
+                            let count = selectedTestCaseIds.size;
+                            if (selectedCount) selectedCount.textContent = count;
+                            if (generateCodeButton) {
+                                if (count > 0) {
+                                    generateCodeButton.disabled = false;
+                                    generateCodeButton.classList.remove('disabled:bg-gray-400', 'disabled:cursor-not-allowed');
+                                } else {
+                                    generateCodeButton.disabled = true;
+                                    generateCodeButton.classList.add('disabled:bg-gray-400', 'disabled:cursor-not-allowed');
+                                }
+                            }
+                            if (headerCheckbox) {
+                                headerCheckbox.checked = rowCheckboxes.length > 0 && Array.from(rowCheckboxes).every(cb => cb.checked);
+                            }
+                            updateSelectionState();
+                        });
+                    });
+                }
+                updateSelectionState();
+            }
+
+            function updateSelectionState() {
+                selectedTestCaseIds.forEach(id => {
+                    if (!allTestCases.some(tc => tc.id === id)) {
+                        selectedTestCaseIds.delete(id);
+                    }
+                });
+                const selectedCountLabel = document.getElementById('librarySelectedCount');
+                if (selectedCountLabel) {
+                    selectedCountLabel.textContent = `${selectedTestCaseIds.size} selected`;
+                }
+            }
+
+            function exportTableToExcel() {
+                const selectedTestCases = allTestCases.filter(tc => selectedTestCaseIds.has(tc.id));
+                const exportTestCases = selectedTestCases.length > 0 ? selectedTestCases : filterCurrentResults();
+
+                if (exportTestCases.length === 0) {
+                    alert('No test cases to export');
+                    return;
+                }
+
+                const scope = selectedTestCases.length > 0 ? 'selected' : 'library';
+                if (typeof ExportUtils !== 'undefined') {
+                    const worksheet = ExportUtils.createWorksheet(exportTestCases, 'QA-Platform');
+                    const blob = new Blob([worksheet], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+                    ExportUtils.downloadFile(blob, `test-cases-${scope}-${new Date().getTime()}.xls`, 'application/vnd.ms-excel');
+                    return;
+                }
+
+                alert('Export utility is not available. Please refresh the page and try again.');
+            }
+
+            async function clearTestCaseLibrary() {
+                if (allTestCases.length === 0) {
+                    alert('The library is already empty.');
+                    return;
+                }
+                const confirmed = confirm(`Clear all ${allTestCases.length} test cases from the library? This cannot be undone.`);
+                if (!confirmed) return;
+
+                try {
+                    const response = await fetch('/api/v1/testcases', { method: 'DELETE' });
+                    const result = await response.json();
+                    if (!response.ok || result.success === false) {
+                        throw new Error(result.message || 'Failed to clear library');
+                    }
+                    selectedTestCaseIds.clear();
+                    currentPage = 1;
+                    await loadTestCases();
+                    alert(`Cleared ${result.deletedCount || 0} test cases from the library.`);
+                } catch (error) {
+                    console.error('Error clearing test case library:', error);
+                    alert('Error clearing test case library: ' + error.message);
+                }
+            }
+
+            window.exportTableToExcel = exportTableToExcel;
+            window.clearTestCaseLibrary = clearTestCaseLibrary;
+
+            window.showTestCaseModal = function(testCaseId) {
+                const tc = allTestCases.find(t => t.id === testCaseId);
+                if (tc) {
+                    document.getElementById('modalTitle').textContent = tc.title || 'Test Case Details';
+                    document.getElementById('modalContent').innerHTML = `
+                        <p><strong>ID:</strong> ${tc.testCaseId || 'TC' + tc.id}</p>
+                        <p><strong>Application:</strong> ${tc.appName || tc.application || 'N/A'}</p>
+                        <p><strong>Module:</strong> ${tc.module || 'N/A'}</p>
+                        <p><strong>Priority:</strong> ${tc.priority || 'MEDIUM'}</p>
+                        <p><strong>Status:</strong> ${tc.status || 'ACTIVE'}</p>
+                        <p><strong>Description:</strong></p>
+                        <p>${tc.description || 'No description'}</p>
+                        <p><strong>Pre-conditions:</strong></p>
+                        <p>${tc.preconditions || 'None'}</p>
+                        <p><strong>Steps:</strong></p>
+                        <ol style="margin-left: 1.5rem;">
+                            ${(tc.steps || []).map(step => {
+                                if (typeof step === 'object') {
+                                    return `<li><strong>Step ${step.stepNumber}:</strong> ${step.action}<br><em>Expected: ${step.expectedResult}</em></li>`;
+                                } else {
+                                    return `<li>${step}</li>`;
+                                }
+                            }).join('')}
+                        </ol>
+                        <p><strong>Tags:</strong> ${(tc.tags || []).join(', ') || 'None'}</p>
+                    `;
+                    document.getElementById('testCaseModal').style.display = 'block';
+                }
+            };
+
+            window.showGenerationSummary = function(response) {
+                if (!response.testCases || response.testCases.length === 0) return;
+                const testCases = response.testCases;
+                let html = `<strong>✓ Successfully generated ${testCases.length} test cases!</strong><br><br>`;
+                html += `<div style="max-height: 400px; overflow-y: auto;">`;
+                testCases.forEach((tc, idx) => {
+                    html += `<div style="margin-bottom: 1rem; padding: 1rem; background-color: #f5f5f5; border-radius: 4px;">
+                        <strong>${idx + 1}. ${tc.title}</strong><br>
+                        <small style="color: #666;">Priority: ${tc.priority} | Steps: ${(tc.steps || []).length}</small><br>
+                        <small>${tc.description || ''}</small>
+                    </div>`;
+                });
+                html += `</div>`;
+                document.getElementById('modalContent').innerHTML = html;
+                document.getElementById('modalTitle').textContent = 'Generation Summary';
+                document.getElementById('testCaseModal').style.display = 'block';
+            };
+
+            // File Upload Handler
+            const uploadArea = document.getElementById('uploadArea');
+            const fileInput = document.getElementById('fileInput');
+            
+            if (uploadArea && fileInput) {
+                // Click to upload
+                uploadArea.addEventListener('click', () => fileInput.click());
+                
+                // Drag and drop
+                uploadArea.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    uploadArea.style.borderColor = '#0052cc';
+                    uploadArea.style.backgroundColor = '#e6f0ff';
+                });
+                
+                uploadArea.addEventListener('dragleave', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    uploadArea.style.borderColor = '#d1d5db';
+                    uploadArea.style.backgroundColor = '#f3f4f6';
+                });
+                
+                uploadArea.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    uploadArea.style.borderColor = '#d1d5db';
+                    uploadArea.style.backgroundColor = 'transparent';
+                    
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0) {
+                        handleFileUpload(files[0]);
+                    }
+                });
+                
+                fileInput.addEventListener('change', (e) => {
+                    if (e.target.files.length > 0) {
+                        handleFileUpload(e.target.files[0]);
+                    }
+                });
+            }
+
+            async function handleFileUpload(file) {
+                const uploadStatus = document.getElementById('uploadStatus');
+                uploadStatus.textContent = 'Uploading: ' + file.name;
+                uploadStatus.style.color = '#0052cc';
+                
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                try {
+                    const response = await fetch('/api/v1/files/extract', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    if (response.ok) {
+                        const result = await response.json();
+                        const requirementsField = document.getElementById('requirements');
+                        if (requirementsField) {
+                            requirementsField.value = result.text || result.extractedText || '';
+                        }
+                        uploadStatus.textContent = '✓ File uploaded successfully!';
+                        uploadStatus.style.color = '#36b37e';
+                    } else {
+                        uploadStatus.textContent = 'Error uploading file';
+                        uploadStatus.style.color = '#ff5630';
+                    }
+                } catch (error) {
+                    console.error('Error uploading file:', error);
+                    uploadStatus.textContent = 'Error: ' + error.message;
+                    uploadStatus.style.color = '#ff5630';
+                }
+            }
+
+            // Load Available User Guide Folders
+            async function loadAvailableGuideFolders() {
+                try {
+                    const response = await fetch('/api/v1/agents/testcases/guides/folders');
+                    if (response.ok) {
+                        const folders = await response.json();
+                        const container = document.getElementById('userGuideFoldersContainer');
+                        
+                        if (folders && Object.keys(folders).length > 0) {
+                            container.innerHTML = '';
+                            
+                            Object.entries(folders).forEach(([folderName, files]) => {
+                                const folderDiv = document.createElement('div');
+                                folderDiv.className = 'border border-gray-300 rounded-md p-2 bg-white';
+                                
+                                // Folder checkbox
+                                const checkboxDiv = document.createElement('div');
+                                checkboxDiv.className = 'flex items-start';
+                                
+                                const checkbox = document.createElement('input');
+                                checkbox.type = 'checkbox';
+                                checkbox.id = `folder-${folderName}`;
+                                checkbox.value = folderName;
+                                checkbox.name = 'userGuideFolders';
+                                checkbox.className = 'h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 mt-0.5';
+                                
+                                const labelDiv = document.createElement('div');
+                                labelDiv.className = 'ml-2 flex-1';
+                                
+                                const label = document.createElement('label');
+                                label.htmlFor = `folder-${folderName}`;
+                                label.className = 'text-sm font-semibold text-gray-800 cursor-pointer';
+                                label.textContent = `📁 ${folderName}`;
+                                
+                                const filesList = document.createElement('div');
+                                filesList.className = 'text-xs text-gray-600 mt-1 pl-2 border-l border-gray-300';
+                                filesList.innerHTML = files.map(f => `<div>📄 ${f}</div>`).join('');
+                                
+                                labelDiv.appendChild(label);
+                                labelDiv.appendChild(filesList);
+                                checkboxDiv.appendChild(checkbox);
+                                checkboxDiv.appendChild(labelDiv);
+                                
+                                folderDiv.appendChild(checkboxDiv);
+                                container.appendChild(folderDiv);
+                            });
+                            
+                            // Add "Select All" option
+                            const divider = document.createElement('div');
+                            divider.className = 'border-t border-gray-300 my-2 pt-2';
+                            
+                            const selectAllDiv = document.createElement('div');
+                            selectAllDiv.className = 'flex items-center font-semibold';
+                            
+                            const selectAllCheckbox = document.createElement('input');
+                            selectAllCheckbox.type = 'checkbox';
+                            selectAllCheckbox.id = 'folder-select-all';
+                            selectAllCheckbox.className = 'h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded';
+                            selectAllCheckbox.addEventListener('change', (e) => {
+                                document.querySelectorAll('input[name="userGuideFolders"]').forEach(cb => {
+                                    cb.checked = e.target.checked;
+                                });
+                            });
+                            
+                            const selectAllLabel = document.createElement('label');
+                            selectAllLabel.htmlFor = 'folder-select-all';
+                            selectAllLabel.className = 'ml-2 text-sm text-gray-900 cursor-pointer font-semibold';
+                            selectAllLabel.textContent = 'Select All Folders';
+                            
+                            selectAllDiv.appendChild(selectAllCheckbox);
+                            selectAllDiv.appendChild(selectAllLabel);
+                            
+                            container.appendChild(divider);
+                            container.appendChild(selectAllDiv);
+                        } else {
+                            container.innerHTML = '<p class="text-xs text-gray-500 text-center py-2">No guide folders available</p>';
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error loading guide folders:', error);
+                    document.getElementById('userGuideFoldersContainer').innerHTML = '<p class="text-xs text-red-500">Error loading folders</p>';
+                }
+            }
+
+            // Generate Test Cases Handler
+            const generateForm = document.getElementById('generate-form');
+            if (generateForm) {
+                generateForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const requirements = document.getElementById('requirements').value;
+                    
+                    // Get all selected folder checkboxes
+                    const selectedFolders = Array.from(document.querySelectorAll('input[name="userGuideFolders"]:checked'))
+                        .map(cb => cb.value);
+
+                    if (!requirements) {
+                        alert('Please enter requirements or upload a file');
+                        return;
+                    }
+
+                    const button = generateForm.querySelector('button');
+                    button.disabled = true;
+                    button.textContent = '⏳ Generating...';
+
+                    try {
+                        // Determine which endpoint to use
+                        const hasFoldersSelected = selectedFolders.length > 0;
+                        const endpoint = hasFoldersSelected
+                            ? '/api/v1/agents/testcases/generate/with-guide'
+                            : '/api/v1/agents/testcases/generate';
+
+                        // Build payload
+                        const payload = { text: requirements };
+                        if (hasFoldersSelected) {
+                            payload.userGuideFolderNames = selectedFolders;
+                        }
+
+                        const response = await fetch(endpoint, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+
+                        if (response.ok) {
+                            const result = await response.json();
+                            console.log('Generated response:', result);
+                            
+                            let guidesMessage = 'Test cases generated successfully!';
+                            if (hasFoldersSelected) {
+                                guidesMessage = `Test cases generated successfully using ${selectedFolders.length} folder(s):\n- ${selectedFolders.join('\n- ')}`;
+                            }
+                            
+                            alert(guidesMessage);
+                            // Show generated test cases in modal
+                            if (result.testCases && result.testCases.length > 0) {
+                                showGenerationSummary(result);
+                            }
+                            generateForm.reset();
+                            // Reload guide selector and switch to library view
+                            setTimeout(() => {
+                                loadAvailableGuideFolders();
+                                loadTestCases();
+                                switchTestCasesTab('library');
+                            }, 500);
+                        } else {
+                            const error = await response.text();
+                            console.error('Error response:', error);
+                            alert('Error generating test cases: ' + error);
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        alert('Error generating test cases: ' + error.message);
+                    } finally {
+                        button.disabled = false;
+                        button.textContent = '🚀 Generate Test Cases';
+                    }
+                });
+            }
+
+            // Filter functionality removed
+
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const contentId = link.getAttribute('data-content');
+                    if (contentId) {
+                        setActiveLink(link);
+                        showContent(contentId);
+                        if (contentId === 'unified-test-cases-content') switchTestCasesTab('generate');
+                    }
+                });
+            });
+
+            tabLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const tabId = link.getAttribute('data-tab');
+                    switchTestCasesTab(tabId);
+                });
+            });
+
+            const defaultSidebarLink = document.querySelector('#nav-test-cases');
+            if (defaultSidebarLink) {
+                showContent(defaultSidebarLink.getAttribute('data-content'));
+                switchTestCasesTab('generate');
+                loadTestCases();
+                loadAvailableGuideFolders();
+            }
+
+            attachCheckboxListeners();
+        });
+    </script>
+
+</body>
+</html>
