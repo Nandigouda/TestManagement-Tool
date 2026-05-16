@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - AI-TestManagement Tool</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .login-container {
+            max-width: 400px;
+            margin: auto;
+            padding: 20px;
+        }
+        .login-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        .btn-primary {
+            width: 100%;
+            padding: 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+        .btn-primary:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .error-message {
+            color: #ff5630;
+            font-size: 14px;
+            margin-top: 10px;
+            padding: 10px;
+            background: #ffebe6;
+            border-radius: 6px;
+            display: none;
+        }
+        .error-message.show {
+            display: block;
+        }
+        .success-message {
+            color: #36b37e;
+            font-size: 14px;
+            margin-top: 10px;
+            padding: 10px;
+            background: #e3fcef;
+            border-radius: 6px;
+            display: none;
+        }
+        .success-message.show {
+            display: block;
+        }
+        .toggle-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+        .toggle-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .toggle-link a:hover {
+            text-decoration: underline;
+        }
+        .form-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .form-subtitle {
+            font-size: 14px;
+            color: #999;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .spinner {
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #667eea;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container" style="margin-top: 60px;">
+        <div class="login-card">
+            <!-- Logo/Title -->
+            <div style="text-align: center; margin-bottom: 30px;">
+                <div style="font-size: 32px; margin-bottom: 10px;">🧪</div>
+                <h1 style="font-size: 28px; font-weight: 700; color: #667eea;">AI-TestManagement Tool</h1>
+            </div>
+
+            <!-- Login Form -->
+            <div id="loginForm">
+                <div class="form-title">Login</div>
+                <div class="form-subtitle">Enter your credentials to access the platform</div>
+
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 8px; color: #333; font-weight: 500;">Username</label>
+                    <input type="text" id="loginUsername" class="form-input" placeholder="Enter your username">
+                </div>
+
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 8px; color: #333; font-weight: 500;">Password</label>
+                    <input type="password" id="loginPassword" class="form-input" placeholder="Enter your password">
+                </div>
+
+                <button class="btn-primary" onclick="handleLogin()" id="loginBtn">Login</button>
+
+                <div id="loginError" class="error-message"></div>
+
+                <div class="toggle-link">
+                    Don't have an account? <a onclick="toggleForms()">Sign up</a>
+                </div>
+            </div>
+
+            <!-- Signup Form (Hidden by default) -->
+            <div id="signupForm" style="display: none;">
+                <div class="form-title">Sign Up</div>
+                <div class="form-subtitle">Create a new account to get started</div>
+
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 8px; color: #333; font-weight: 500;">Full Name</label>
+                    <input type="text" id="signupFullName" class="form-input" placeholder="Enter your full name">
+                </div>
+
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 8px; color: #333; font-weight: 500;">Username</label>
+                    <input type="text" id="signupUsername" class="form-input" placeholder="Choose a username">
+                </div>
+
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 8px; color: #333; font-weight: 500;">Email</label>
+                    <input type="email" id="signupEmail" class="form-input" placeholder="Enter your email">
+                </div>
+
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 8px; color: #333; font-weight: 500;">Password</label>
+                    <input type="password" id="signupPassword" class="form-input" placeholder="Create a password (min 6 chars)">
+                </div>
+
+                <button class="btn-primary" onclick="handleSignup()" id="signupBtn">Sign Up</button>
+
+                <div id="signupError" class="error-message"></div>
+                <div id="signupSuccess" class="success-message"></div>
+
+                <div class="toggle-link">
+                    Already have an account? <a onclick="toggleForms()">Login</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api/v1/auth';
+
+        function toggleForms() {
+            const loginForm = document.getElementById('loginForm');
+            const signupForm = document.getElementById('signupForm');
+            const loginError = document.getElementById('loginError');
+            const signupError = document.getElementById('signupError');
+            const signupSuccess = document.getElementById('signupSuccess');
+
+            loginForm.style.display = loginForm.style.display === 'none' ? 'block' : 'none';
+            signupForm.style.display = signupForm.style.display === 'none' ? 'block' : 'none';
+
+            loginError.classList.remove('show');
+            signupError.classList.remove('show');
+            signupSuccess.classList.remove('show');
+        }
+
+        async function handleLogin() {
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            const loginBtn = document.getElementById('loginBtn');
+            const loginError = document.getElementById('loginError');
+
+            if (!username || !password) {
+                loginError.textContent = 'Please enter both username and password';
+                loginError.classList.add('show');
+                return;
+            }
+
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<div class="spinner" style="margin: 0 auto;"></div>';
+
+            try {
+                const response = await fetch(`${API_BASE}/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        password: password
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Store user info in session storage
+                    sessionStorage.setItem('user', JSON.stringify(data.user));
+                    loginError.classList.remove('show');
+                    // Redirect to main page
+                    window.location.href = '/api/v1/index.html';
+                } else {
+                    loginError.textContent = data.message || 'Login failed';
+                    loginError.classList.add('show');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                loginError.textContent = 'An error occurred during login. Please try again.';
+                loginError.classList.add('show');
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = 'Login';
+            }
+        }
+
+        async function handleSignup() {
+            const fullName = document.getElementById('signupFullName').value;
+            const username = document.getElementById('signupUsername').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            const signupBtn = document.getElementById('signupBtn');
+            const signupError = document.getElementById('signupError');
+            const signupSuccess = document.getElementById('signupSuccess');
+
+            // Validation
+            if (!fullName || !username || !email || !password) {
+                signupError.textContent = 'Please fill in all fields';
+                signupError.classList.add('show');
+                return;
+            }
+
+            if (password.length < 6) {
+                signupError.textContent = 'Password must be at least 6 characters';
+                signupError.classList.add('show');
+                return;
+            }
+
+            if (!email.includes('@')) {
+                signupError.textContent = 'Please enter a valid email';
+                signupError.classList.add('show');
+                return;
+            }
+
+            signupBtn.disabled = true;
+            signupBtn.innerHTML = '<div class="spinner" style="margin: 0 auto;"></div>';
+
+            try {
+                const response = await fetch(`${API_BASE}/signup`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        fullName: fullName,
+                        username: username,
+                        email: email,
+                        password: password
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    signupError.classList.remove('show');
+                    signupSuccess.textContent = 'Account created successfully! You can now login.';
+                    signupSuccess.classList.add('show');
+                    
+                    // Clear form
+                    document.getElementById('signupFullName').value = '';
+                    document.getElementById('signupUsername').value = '';
+                    document.getElementById('signupEmail').value = '';
+                    document.getElementById('signupPassword').value = '';
+                    
+                    // Switch to login form after 2 seconds
+                    setTimeout(() => {
+                        toggleForms();
+                    }, 2000);
+                } else {
+                    signupSuccess.classList.remove('show');
+                    signupError.textContent = data.message || 'Signup failed';
+                    signupError.classList.add('show');
+                }
+            } catch (error) {
+                console.error('Signup error:', error);
+                signupSuccess.classList.remove('show');
+                signupError.textContent = 'An error occurred during signup. Please try again.';
+                signupError.classList.add('show');
+            } finally {
+                signupBtn.disabled = false;
+                signupBtn.innerHTML = 'Sign Up';
+            }
+        }
+
+        // Allow Enter key to submit
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('loginPassword').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') handleLogin();
+            });
+
+            document.getElementById('signupPassword').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') handleSignup();
+            });
+        });
+    </script>
+</body>
+</html>

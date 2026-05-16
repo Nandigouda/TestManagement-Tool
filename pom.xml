@@ -6,12 +6,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.qaautomation</groupId>
-    <artifactId>qa-automation-platform</artifactId>
+    <artifactId>ai-testmanagement-tool</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
-    <name>AI QA Automation Platform</name>
-    <description>Agent-based system for converting requirements into test cases and automation scripts</description>
+    <name>AI-TestManagement Tool</name>
+    <description>AI-powered test case management and automation platform with user authentication</description>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -34,7 +34,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
-
+        <!-- Spring Security -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
         <!-- Spring Data & Database -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
