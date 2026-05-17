@@ -1,5 +1,7 @@
 # AI Test Management Tool
 
+**Version**: 2.0-SNAPSHOT
+
 AI-assisted QA platform for generating, storing, reviewing, exporting, and automating test cases. The app is a Spring Boot web application with a static browser UI, PostgreSQL persistence, Flyway migrations, Azure OpenAI integration, and a Jira/GitHub integration layer for pulling sprint context directly into test generation.
 
 ## Current Capabilities
@@ -135,7 +137,7 @@ Or with Maven:
 Or from the packaged jar:
 
 ```powershell
-java -jar target\ai-testmanagement-tool-1.0.0.jar
+java -jar target\ai-testmanagement-tool-2.0-SNAPSHOT.jar
 ```
 
 Open:
