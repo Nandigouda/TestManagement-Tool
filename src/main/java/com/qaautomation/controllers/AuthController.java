@@ -8,6 +8,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import jakarta.servlet.http.HttpServletRequest;
+import java.util.Collections;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,7 +28,7 @@ public class AuthController {
      * User login endpoint
      */
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request, HttpServletRequest httpRequest) {
         log.info("Login attempt for user: {}", request.getUsername());
         
         if (request.getUsername() == null || request.getUsername().isEmpty()) {
@@ -43,9 +48,18 @@ public class AuthController {
         }
         
         AuthResponse response = authService.login(request);
-        return response.getSuccess() 
-            ? ResponseEntity.ok(response) 
-            : ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        if (response.getSuccess()) {
+            // create an Authentication and store it in the SecurityContext so subsequent requests are authenticated
+            UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(request.getUsername(), null, Collections.emptyList());
+            SecurityContextHolder.getContext().setAuthentication(auth);
+            // ensure a session exists so JSESSIONID cookie is issued
+            httpRequest.getSession(true);
+            // also store the security context in the HTTP session so it persists across requests
+            httpRequest.getSession().setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }
     }
     
     /**
@@ -64,14 +78,6 @@ public class AuthController {
                     .build());
         }
         
-        if (request.getEmail() == null || request.getEmail().isEmpty()) {
-            return ResponseEntity.badRequest()
-                .body(AuthResponse.builder()
-                    .success(false)
-                    .message("Email is required")
-                    .build());
-        }
-        
         if (request.getPassword() == null || request.getPassword().length() < 6) {
             return ResponseEntity.badRequest()
                 .body(AuthResponse.builder()
@@ -84,5 +90,26 @@ public class AuthController {
         return response.getSuccess() 
             ? ResponseEntity.status(HttpStatus.CREATED).body(response)
             : ResponseEntity.badRequest().body(response);
+    }
+    
+    /**
+     * Check if user is authenticated
+     */
+    @GetMapping("/status")
+    public ResponseEntity<?> getAuthStatus() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        boolean isAuthenticated = auth != null && auth.isAuthenticated() && 
+            !"anonymousUser".equals(auth.getPrincipal());
+        
+        if (isAuthenticated) {
+            return ResponseEntity.ok().body(new Object() {
+                public final boolean authenticated = true;
+                public final String principal = auth.getName();
+            });
+        } else {
+            return ResponseEntity.status(401).body(new Object() {
+                public final boolean authenticated = false;
+            });
+        }
     }
 }

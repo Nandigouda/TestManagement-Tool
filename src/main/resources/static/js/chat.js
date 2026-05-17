@@ -97,7 +97,7 @@ class ChatHandler {
     async initializeChat() {
         try {
             // Start a new chat conversation
-            const response = await fetch('/api/v1/chat/start', {
+            const response = await fetch('/testmanagement/chat/start', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({})
@@ -187,7 +187,7 @@ class ChatHandler {
                 formData.append('messageId', this.conversationId);
             }
 
-            const response = await fetch('/api/v1/chat/files/upload', {
+            const response = await fetch('/testmanagement/chat/files/upload', {
                 method: 'POST',
                 body: formData
             });
@@ -221,7 +221,7 @@ class ChatHandler {
      */
     async removeFile(fileId, fileName) {
         try {
-            const response = await fetch(`/api/v1/chat/files/${fileId}`, {
+            const response = await fetch(`/testmanagement/chat/files/${fileId}`, {
                 method: 'DELETE'
             });
 
@@ -343,7 +343,7 @@ class ChatHandler {
 
             console.log('Sending message:', requestBody);
 
-            const response = await fetch('/api/v1/chat/message', {
+            const response = await fetch('/testmanagement/chat/message', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(requestBody)
@@ -434,7 +434,7 @@ class ChatHandler {
         };
 
         try {
-            const response = await fetch(`/api/v1/chat/${this.conversationId}/${actionType}`, {
+            const response = await fetch(`/testmanagement/chat/${this.conversationId}/${actionType}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ message: actionMessages[actionType] || actionType })

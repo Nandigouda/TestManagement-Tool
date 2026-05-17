@@ -158,7 +158,7 @@ class UnifiedTestCasesComponent {
 
     async loadMetricsAndTestCases() {
         try {
-            const response = await fetch('/api/v1/testcases/metrics');
+            const response = await fetch('/testmanagement/testcases/metrics');
             const data = await response.json();
             this.metrics = data;
             console.log('Metrics loaded:', data);
@@ -169,7 +169,7 @@ class UnifiedTestCasesComponent {
             this.displayMetrics();
 
             // Load test cases
-            const tcResponse = await fetch('/api/v1/testcases');
+            const tcResponse = await fetch('/testmanagement/testcases');
             const tcData = await tcResponse.json();
             console.log('Test cases loaded:', tcData);
             this.allTestCases = tcData.testCases || [];
@@ -221,7 +221,7 @@ class UnifiedTestCasesComponent {
 
         try {
             resultsDiv.innerHTML = '<div class="alert alert-info" style="margin-top: 20px;">Generating test cases...</div>';
-            const response = await fetch('/api/v1/agents/testcases', {
+            const response = await fetch('/testmanagement/agents/testcases', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
@@ -431,7 +431,7 @@ class UnifiedTestCasesComponent {
                 if (!testCase) {
                     console.warn('Test case not found locally, fetching from server:', tcId);
                     try {
-                        const resp = await fetch(`/api/v1/testcases/${encodeURIComponent(tcId)}`);
+                        const resp = await fetch(`/testmanagement/testcases/${encodeURIComponent(tcId)}`);
                         if (resp.ok) {
                             testCase = await resp.json();
                         } else {
@@ -749,7 +749,7 @@ class UnifiedTestCasesComponent {
 
             console.log('Sending code generation request:', payload);
 
-            const response = await fetch('/api/v1/agents/code/from-testcases', {
+            const response = await fetch('/testmanagement/agents/code/from-testcases', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
@@ -891,7 +891,7 @@ class UnifiedTestCasesComponent {
         }
 
         try {
-            const response = await fetch('/api/v1/testcases', { method: 'DELETE' });
+            const response = await fetch('/testmanagement/testcases', { method: 'DELETE' });
             const result = await response.json();
             if (!response.ok || result.success === false) {
                 throw new Error(result.message || 'Failed to clear library');

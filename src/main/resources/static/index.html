@@ -95,7 +95,10 @@
             <button class="text-gray-500 hover:bg-gray-100 p-2 rounded-full transition duration-150">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
             </button>
-            <button class="w-8 h-8 rounded-full bg-blue-500 text-white font-medium text-sm flex items-center justify-center">NN</button>
+            <div class="flex items-center space-x-2">
+                <button class="w-8 h-8 rounded-full bg-blue-500 text-white font-medium text-sm flex items-center justify-center" id="userInitials">NN</button>
+                <button onclick="handleLogout()" class="text-gray-500 hover:bg-gray-100 p-2 rounded transition duration-150 text-sm font-medium">Logout</button>
+            </div>
         </div>
     </header>
 
@@ -158,6 +161,24 @@
                                 <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
                                     <h3 class="text-sm font-semibold text-gray-700 mb-4">✏️ Input Requirements</h3>
                                     <form id="generate-form" class="space-y-4">
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div class="border border-gray-200 rounded-md p-3 bg-gray-50">
+                                                <label for="jiraTicketId" class="block text-sm font-medium text-gray-700 mb-2">Fetch Jira Ticket</label>
+                                                <div class="flex gap-2">
+                                                    <input type="text" id="jiraTicketId" placeholder="PROJ-123 or Jira URL" class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border">
+                                                    <button type="button" id="fetchJiraBtn" class="px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">Fetch</button>
+                                                </div>
+                                                <div id="jiraFetchStatus" class="mt-2 text-xs text-gray-500" role="status" aria-live="polite"></div>
+                                                <div id="jiraTicketContext" class="mt-2 text-xs text-gray-600"></div>
+                                            </div>
+                                            <div class="border border-gray-200 rounded-md p-3 bg-gray-50">
+                                                <label for="githubPrUrls" class="block text-sm font-medium text-gray-700 mb-2">Fetch GitHub PRs</label>
+                                                <textarea id="githubPrUrls" rows="2" placeholder="One or more PR URLs, comma or newline separated" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"></textarea>
+                                                <button type="button" id="fetchGithubBtn" class="mt-2 px-3 py-2 text-sm font-medium text-white bg-gray-800 rounded-md hover:bg-gray-900">Fetch PR Context</button>
+                                                <div id="githubFetchStatus" class="mt-2 text-xs text-gray-500" role="status" aria-live="polite"></div>
+                                                <div id="githubScopeChips" class="mt-2 flex flex-wrap gap-2"></div>
+                                            </div>
+                                        </div>
                                         <div>
                                             <label for="requirements" class="block text-sm font-medium text-gray-700 mb-2">Requirements & Acceptance Criteria</label>
                                             <textarea id="requirements" rows="5" placeholder="Describe your requirements, feature specifications, or test scenarios here..." class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-3 border"></textarea>
@@ -239,54 +260,152 @@
 
             <!-- 2. Jira Integration Content -->
             <div id="jira-integration-content" class="content-pane hidden">
+                <!-- Header -->
                 <div class="mb-6">
-                    <h1 class="text-3xl font-bold text-gray-800">Jira Integration</h1>
-                    <p class="text-gray-500 mt-1">Connect your QA Platform to Jira to sync test cases, report bugs, and track status.</p>
-                </div>
-                <div id="jira-notification" class="hidden mb-4 p-3 rounded-md transition duration-300 ease-in-out"></div>
-                <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200 mb-8">
-                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Connection Status</h2>
-                    <div id="connection-status" class="flex items-center space-x-3 p-3 bg-red-50 border border-red-200 rounded-md">
-                        <svg id="status-icon" class="w-6 h-6 text-red-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>
-                        <p id="status-message" class="text-sm text-red-700">Not Connected. Please enter your Jira credentials below.</p>
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-3xl font-bold text-gray-800">Jira Integration</h1>
+                            <p class="text-gray-500 mt-1">Connect your QA Platform to Jira to sync test cases, report bugs, and track automation.</p>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span id="jira-status-dot" class="w-3 h-3 rounded-full bg-red-500"></span>
+                            <span id="jira-status-text" class="text-sm font-medium text-red-600">Not Connected</span>
+                        </div>
                     </div>
                 </div>
-                <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
-                    <h2 class="text-xl font-semibold text-gray-800 mb-6">Jira Server Configuration</h2>
-                    <form id="jira-config-form" class="space-y-6">
-                        <div>
-                            <label for="jira-url" class="block text-sm font-medium text-gray-700">Jira Server URL</label>
-                            <input type="url" id="jira-url" value="https://qa-company.atlassian.net" placeholder="e.g., https://yourcompany.atlassian.net" class="p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm transition duration-150">
-                            <p class="mt-2 text-xs text-gray-500">Provide the base URL for your Jira instance (Cloud or Server).</p>
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                <!-- Alert Container -->
+                <div id="jira-alert-container" class="mb-4"></div>
+
+                <!-- Tabs Navigation -->
+                <div class="bg-white border-b border-gray-200 mb-6">
+                    <div class="flex space-x-8 px-6">
+                        <button class="jira-tab-btn active py-4 text-sm font-medium text-gray-700 border-b-2 border-blue-600" data-tab="jira-config">
+                            Configuration
+                        </button>
+                        <button class="jira-tab-btn py-4 text-sm font-medium text-gray-500 border-b-2 border-transparent cursor-pointer hover:text-gray-700" data-tab="jira-push">
+                            Push Test Cases
+                        </button>
+                        <button class="jira-tab-btn py-4 text-sm font-medium text-gray-500 border-b-2 border-transparent cursor-pointer hover:text-gray-700" data-tab="jira-history">
+                            History
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Configuration Tab -->
+                <div id="jira-config" class="jira-tab-content">
+                    <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200 mb-8">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-6">Jira Server Configuration</h2>
+                        <form id="jira-config-form" class="space-y-6">
                             <div>
-                                <label for="jira-email" class="block text-sm font-medium text-gray-700">Email (Jira Username)</label>
-                                <input type="email" id="jira-email" value="user@company.com" placeholder="your.name@company.com" class="p-2 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm transition duration-150">
+                                <label for="jira-url" class="block text-sm font-medium text-gray-700 mb-2">Jira Server URL <span class="text-red-500">*</span></label>
+                                <input type="url" id="jira-url" placeholder="https://yourcompany.atlassian.net" class="p-3 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm transition duration-150" required>
+                                <p class="mt-2 text-xs text-gray-500">Example: https://mycompany.atlassian.net</p>
                             </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label for="jira-email" class="block text-sm font-medium text-gray-700 mb-2">Email/Username <span class="text-red-500">*</span></label>
+                                    <input type="email" id="jira-email" placeholder="your.email@company.com" class="p-3 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm transition duration-150" required>
+                                </div>
+                                <div>
+                                    <label for="jira-token" class="block text-sm font-medium text-gray-700 mb-2">API Token <span class="text-red-500">*</span></label>
+                                    <input type="password" id="jira-token" placeholder="Enter your API Token" class="p-3 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm transition duration-150" required>
+                                    <p class="mt-2 text-xs text-gray-500"><a href="https://id.atlassian.com/manage-profile/security/api-tokens" target="_blank" class="text-blue-600 hover:underline">Generate token here</a></p>
+                                </div>
+                            </div>
+
+                            <div class="pt-6 border-t border-gray-200 flex justify-end space-x-4">
+                                <button type="button" id="jira-test-btn" class="px-6 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 font-medium text-sm transition">
+                                    Test Connection
+                                </button>
+                                <button type="submit" class="px-6 py-2 btn-primary text-white rounded-md font-medium text-sm">
+                                    Save Configuration
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="bg-blue-50 border border-blue-200 p-6 rounded-lg">
+                        <h3 class="text-sm font-semibold text-blue-900 mb-3">📋 Getting Your Credentials</h3>
+                        <ol class="text-sm text-blue-800 space-y-2 list-decimal list-inside">
+                            <li>Log in to your Jira account</li>
+                            <li>Go to <strong>Settings → API tokens</strong></li>
+                            <li>Click <strong>Create API token</strong></li>
+                            <li>Copy the token and paste it above</li>
+                            <li>Your Jira URL is: <strong>https://[workspace].atlassian.net</strong></li>
+                        </ol>
+                    </div>
+                </div>
+
+                <!-- Push Test Cases Tab -->
+                <div id="jira-push" class="jira-tab-content hidden">
+                    <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                        <h2 class="text-lg font-semibold text-gray-900 mb-6">Push Test Cases to Jira</h2>
+                        
+                        <form id="jira-push-form" class="space-y-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label for="jira-push-project" class="block text-sm font-medium text-gray-700 mb-2">Project Key <span class="text-red-500">*</span></label>
+                                    <input type="text" id="jira-push-project" placeholder="e.g., QA" class="p-3 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required>
+                                </div>
+
+                                <div>
+                                    <label for="jira-push-type" class="block text-sm font-medium text-gray-700 mb-2">Issue Type <span class="text-red-500">*</span></label>
+                                    <select id="jira-push-type" class="p-3 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required>
+                                        <option value="">Select issue type</option>
+                                        <option value="Test">Test</option>
+                                        <option value="Task">Task</option>
+                                        <option value="Story">Story</option>
+                                        <option value="Bug">Bug</option>
+                                    </select>
+                                </div>
+                            </div>
+
                             <div>
-                                <label for="jira-token" class="block text-sm font-medium text-gray-700">API Token</label>
-                                <input type="password" id="jira-token" value="sk_1a2b3c4d5e6f7g8h9i0j" placeholder="Paste your generated API Token here" class="p-2 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm transition duration-150">
-                                <p class="mt-2 text-xs text-gray-500">Generate a token in Jira's Account Security settings for better security than a password.</p>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Select Test Cases <span class="text-red-500">*</span></label>
+                                <div id="jira-push-testcases" class="border border-gray-300 rounded-lg p-4 max-h-64 overflow-y-auto bg-white">
+                                    <p class="text-gray-500 text-sm">Loading test cases...</p>
+                                </div>
                             </div>
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label for="jira-project" class="block text-sm font-medium text-gray-700">Default Jira Project Key</label>
-                                <input type="text" id="jira-project" value="QA" placeholder="e.g., QA, PROJ" class="p-2 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm transition duration-150">
+
+                            <div class="pt-6 border-t border-gray-200 flex justify-end space-x-4">
+                                <button type="reset" class="px-6 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 font-medium text-sm">
+                                    Clear
+                                </button>
+                                <button type="submit" class="px-6 py-2 btn-primary text-white rounded-md font-medium text-sm flex items-center">
+                                    <span id="jira-push-btn-text">Push to Jira</span>
+                                    <span id="jira-push-spinner" class="spinner ml-2 hidden"></span>
+                                </button>
                             </div>
-                            <div>
-                                <label for="jira-issue-type" class="block text-sm font-medium text-gray-700">Default Test Case Issue Type</label>
-                                <select id="jira-issue-type" class="p-2 mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm transition duration-150"><option>Story</option><option>Task</option><option>Bug</option><option selected>Test Case (Custom)</option></select>
-                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- History Tab -->
+                <div id="jira-history" class="jira-tab-content hidden">
+                    <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                        <h2 class="text-lg font-semibold text-gray-900 mb-6">Push History</h2>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm">
+                                <thead class="bg-gray-50 border-b border-gray-200">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left font-semibold text-gray-700">Date</th>
+                                        <th class="px-6 py-3 text-left font-semibold text-gray-700">Project</th>
+                                        <th class="px-6 py-3 text-left font-semibold text-gray-700">Test Cases</th>
+                                        <th class="px-6 py-3 text-left font-semibold text-gray-700">Success</th>
+                                        <th class="px-6 py-3 text-left font-semibold text-gray-700">Failed</th>
+                                        <th class="px-6 py-3 text-left font-semibold text-gray-700">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="jira-history-table">
+                                    <tr>
+                                        <td colspan="6" class="px-6 py-4 text-center text-gray-500">No push history available</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
-                        <div class="pt-6 flex justify-end">
-                            <button type="submit" id="connect-jira-btn" class="btn-primary flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150">
-                                <span id="button-text">Connect to Jira</span>
-                                <div id="button-spinner" class="spinner ml-2 hidden"></div>
-                            </button>
-                        </div>
-                    </form>
+                    </div>
                 </div>
             </div>
 
@@ -379,6 +498,9 @@
     <script src="js/chat.js"></script>
     <script src="js/jira-app.js"></script>
     <script src="js/resizable-table.js"></script>
+    <!-- Jira Integration Scripts -->
+    <script src="js/services/jira-api.js"></script>
+    <script src="js/jira-handler.js"></script>
 
     <!-- Test Case Modal -->
     <div id="testCaseModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.5); z-index: 1000; overflow-y: auto;">
@@ -397,7 +519,56 @@
             let currentPage = 1;
             const pageSize = 10; // Changed from 5 to 10
 
-        document.addEventListener('DOMContentLoaded', () => {
+        // Check authentication on page load
+        async function checkAuthentication() {
+            try {
+                const response = await fetch('/testmanagement/auth/status', {
+                    method: 'GET',
+                    credentials: 'same-origin'
+                });
+                
+                if (!response.ok) {
+                    // Not authenticated, redirect to login
+                    window.location.href = '/testmanagement/login.html';
+                    return false;
+                }
+                
+                const data = await response.json();
+                if (!data.authenticated) {
+                    // Not authenticated, redirect to login
+                    window.location.href = '/testmanagement/login.html';
+                    return false;
+                }
+                
+                return true;
+            } catch (error) {
+                console.error('Auth check error:', error);
+                // On error, redirect to login for safety
+                window.location.href = '/testmanagement/login.html';
+                return false;
+            }
+        }
+
+        // Handle logout
+        function handleLogout() {
+            fetch('/testmanagement/logout', {
+                method: 'GET',
+                credentials: 'same-origin'
+            }).then(() => {
+                sessionStorage.removeItem('user');
+                window.location.href = '/testmanagement/login.html';
+            }).catch(error => {
+                console.error('Logout error:', error);
+                window.location.href = '/testmanagement/login.html';
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Check authentication first
+            if (!await checkAuthentication()) {
+                return;
+            }
+
             const sidebarLinks = document.querySelectorAll('.sidebar-link');
             const contentPanes = document.querySelectorAll('.content-pane');
             const tabLinks = document.querySelectorAll('.tab-link');
@@ -435,7 +606,7 @@
 
             async function loadTestCases() {
                 try {
-                    const response = await fetch('/api/v1/testcases');
+                    const response = await fetch('/testmanagement/testcases');
                     if (response.ok) {
                         const data = await response.json();
                         // Handle both array and wrapped response
@@ -725,7 +896,7 @@
                 if (!confirmed) return;
 
                 try {
-                    const response = await fetch('/api/v1/testcases', { method: 'DELETE' });
+                    const response = await fetch('/testmanagement/testcases', { method: 'DELETE' });
                     const result = await response.json();
                     if (!response.ok || result.success === false) {
                         throw new Error(result.message || 'Failed to clear library');
@@ -842,7 +1013,7 @@
                 formData.append('file', file);
                 
                 try {
-                    const response = await fetch('/api/v1/files/extract', {
+                    const response = await fetch('/testmanagement/files/extract', {
                         method: 'POST',
                         body: formData
                     });
@@ -869,7 +1040,7 @@
             // Load Available User Guide Folders
             async function loadAvailableGuideFolders() {
                 try {
-                    const response = await fetch('/api/v1/agents/testcases/guides/folders');
+                    const response = await fetch('/testmanagement/agents/testcases/guides/folders');
                     if (response.ok) {
                         const folders = await response.json();
                         const container = document.getElementById('userGuideFoldersContainer');
@@ -950,6 +1121,162 @@
                 }
             }
 
+            function getIntegrationUserId() {
+                const user = sessionStorage.getItem('user');
+                if (!user) return 'anonymous';
+                try {
+                    return JSON.parse(user).username || 'anonymous';
+                } catch {
+                    return user;
+                }
+            }
+
+            function setIntegrationStatus(elementId, message, type = 'info') {
+                const element = document.getElementById(elementId);
+                if (!element) return;
+                const colors = {
+                    info: 'text-gray-500',
+                    success: 'text-green-600',
+                    error: 'text-red-600'
+                };
+                element.className = `mt-2 text-xs ${colors[type] || colors.info}`;
+                element.textContent = message;
+            }
+
+            function appendRequirementsContext(header, body) {
+                const requirementsField = document.getElementById('requirements');
+                if (!requirementsField || !body) return;
+                const existing = requirementsField.value.trim();
+                const block = `${header}\n${body.trim()}`;
+                requirementsField.value = existing ? `${existing}\n\n${block}` : block;
+            }
+
+            function renderScopeChips(scopes) {
+                const container = document.getElementById('githubScopeChips');
+                if (!container) return;
+                container.innerHTML = '';
+                (scopes || []).forEach(scope => {
+                    const chip = document.createElement('span');
+                    chip.className = 'px-2 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200 text-xs font-medium';
+                    chip.textContent = scope;
+                    chip.dataset.scope = scope;
+                    container.appendChild(chip);
+                });
+            }
+
+            async function fetchJiraTicket() {
+                const input = document.getElementById('jiraTicketId');
+                const button = document.getElementById('fetchJiraBtn');
+                const ticketId = (input?.value || '').trim();
+                if (!ticketId) {
+                    setIntegrationStatus('jiraFetchStatus', 'Enter a Jira ticket ID or URL.', 'error');
+                    return;
+                }
+
+                button.disabled = true;
+                button.textContent = 'Fetching...';
+                setIntegrationStatus('jiraFetchStatus', 'Fetching Jira ticket...', 'info');
+
+                try {
+                    const response = await fetch(`/testmanagement/api/integrations/jira/ticket/${encodeURIComponent(ticketId)}`, {
+                        headers: { 'X-User-Id': getIntegrationUserId() }
+                    });
+                    const result = await response.json();
+                    if (!response.ok || !result.success) {
+                        throw new Error(result.error || 'Failed to fetch Jira ticket');
+                    }
+
+                    const ticket = result.data;
+                    const context = [
+                        `Ticket: ${ticket.key || ticket.id} - ${ticket.title || ''}`,
+                        `Status: ${ticket.status || 'Unknown'}`,
+                        `Assignee: ${ticket.assignee || 'Unassigned'}`,
+                        ticket.sprint ? `Sprint: ${ticket.sprint}` : '',
+                        ticket.priority ? `Priority: ${ticket.priority}` : ''
+                    ].filter(Boolean).join(' | ');
+                    document.getElementById('jiraTicketContext').textContent = context;
+
+                    const requirementText = [
+                        ticket.title ? `Title: ${ticket.title}` : '',
+                        ticket.description || '',
+                        ticket.acceptanceCriteria ? `Acceptance Criteria:\n${ticket.acceptanceCriteria}` : '',
+                        ticket.labels?.length ? `Labels: ${ticket.labels.join(', ')}` : '',
+                        ticket.linkedIssues?.length ? `Linked Issues: ${ticket.linkedIssues.join(', ')}` : '',
+                        ticket.sourceUrl ? `Source: ${ticket.sourceUrl}` : ''
+                    ].filter(Boolean).join('\n\n');
+
+                    appendRequirementsContext(`Jira ${ticket.key || ticket.id}`, requirementText);
+                    setIntegrationStatus('jiraFetchStatus', `Loaded ${ticket.key || ticket.id} at ${new Date().toLocaleTimeString()}.`, 'success');
+                } catch (error) {
+                    setIntegrationStatus('jiraFetchStatus', error.message, 'error');
+                } finally {
+                    button.disabled = false;
+                    button.textContent = 'Fetch';
+                }
+            }
+
+            async function fetchGithubPRs() {
+                const input = document.getElementById('githubPrUrls');
+                const button = document.getElementById('fetchGithubBtn');
+                const rawUrls = (input?.value || '').trim();
+                const urls = rawUrls.split(/[,\n\r]+/).map(value => value.trim()).filter(Boolean);
+                if (urls.length === 0) {
+                    setIntegrationStatus('githubFetchStatus', 'Enter one or more GitHub PR URLs.', 'error');
+                    return;
+                }
+
+                button.disabled = true;
+                button.textContent = 'Fetching...';
+                setIntegrationStatus('githubFetchStatus', `Fetching ${urls.length} PR${urls.length > 1 ? 's' : ''}...`, 'info');
+
+                try {
+                    const response = await fetch('/testmanagement/api/integrations/github/pr', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-User-Id': getIntegrationUserId()
+                        },
+                        body: JSON.stringify({ urls: urls.join('\n') })
+                    });
+                    const result = await response.json();
+                    if (!response.ok || !result.success) {
+                        throw new Error(result.error || 'Failed to fetch GitHub PR context');
+                    }
+
+                    const payload = result.data;
+                    const prs = payload.pullRequests || [payload];
+                    const scopes = payload.scopeCategories || [...new Set(prs.flatMap(pr => pr.scopeCategories || []))];
+                    renderScopeChips(scopes);
+
+                    const prContext = prs.map(pr => {
+                        const fileList = (pr.filesChanged || [])
+                            .map(file => `- ${file.status || 'changed'} ${file.filename} (+${file.additions || 0}/-${file.deletions || 0}) [${file.scopeCategory || file.fileType || 'Other'}]${file.isSensitive ? ' sensitive file content hidden' : ''}`)
+                            .join('\n');
+                        return [
+                            `PR: ${pr.repository || ''}#${pr.prNumber || ''} - ${pr.title || ''}`,
+                            pr.body ? `Description:\n${pr.body}` : '',
+                            `Branches: ${pr.baseBranch || '?'} <- ${pr.headBranch || '?'}`,
+                            `Merge Status: ${pr.mergeStatus || 'unknown'}`,
+                            `Scopes: ${(pr.scopeCategories || []).join(', ') || 'Unclassified'}`,
+                            pr.diffSummary || '',
+                            fileList,
+                            pr.sourceUrl ? `Source: ${pr.sourceUrl}` : ''
+                        ].filter(Boolean).join('\n\n');
+                    }).join('\n\n---\n\n');
+
+                    appendRequirementsContext('GitHub Regression Context', prContext);
+                    setIntegrationStatus('githubFetchStatus', `Loaded ${prs.length} PR${prs.length > 1 ? 's' : ''}; scope detected: ${scopes.join(', ') || 'none'}.`, 'success');
+                } catch (error) {
+                    setIntegrationStatus('githubFetchStatus', error.message, 'error');
+                } finally {
+                    button.disabled = false;
+                    button.textContent = 'Fetch PR Context';
+                }
+            }
+
+            document.getElementById('fetchJiraBtn')?.addEventListener('click', fetchJiraTicket);
+            document.getElementById('fetchGithubBtn')?.addEventListener('click', fetchGithubPRs);
+
             // Generate Test Cases Handler
             const generateForm = document.getElementById('generate-form');
             if (generateForm) {
@@ -974,8 +1301,8 @@
                         // Determine which endpoint to use
                         const hasFoldersSelected = selectedFolders.length > 0;
                         const endpoint = hasFoldersSelected
-                            ? '/api/v1/agents/testcases/generate/with-guide'
-                            : '/api/v1/agents/testcases/generate';
+                            ? '/testmanagement/agents/testcases/generate/with-guide'
+                            : '/testmanagement/agents/testcases/generate';
 
                         // Build payload
                         const payload = { text: requirements };

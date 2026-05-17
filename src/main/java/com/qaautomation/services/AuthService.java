@@ -31,20 +31,12 @@ public class AuthService {
                 .build();
         }
         
-        // Check if email exists
-        if (userRepository.existsByEmail(request.getEmail())) {
-            return AuthResponse.builder()
-                .success(false)
-                .message("Email already exists")
-                .build();
-        }
-        
         // Create new user
         User user = User.builder()
             .username(request.getUsername())
-            .email(request.getEmail())
+            .email(request.getUsername() + "@local.testmanagement")
             .password(passwordEncoder.encode(request.getPassword()))
-            .fullName(request.getFullName())
+            .fullName(request.getUsername())
             .isActive(true)
             .build();
         
@@ -57,8 +49,6 @@ public class AuthService {
             .user(AuthResponse.UserDTO.builder()
                 .id(savedUser.getId())
                 .username(savedUser.getUsername())
-                .email(savedUser.getEmail())
-                .fullName(savedUser.getFullName())
                 .build())
             .build();
     }
@@ -105,8 +95,6 @@ public class AuthService {
             .user(AuthResponse.UserDTO.builder()
                 .id(user.getId())
                 .username(user.getUsername())
-                .email(user.getEmail())
-                .fullName(user.getFullName())
                 .build())
             .build();
     }

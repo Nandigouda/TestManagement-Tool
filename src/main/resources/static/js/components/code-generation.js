@@ -83,7 +83,7 @@ class CodeGenerationComponent {
 
         try {
             resultDiv.innerHTML = '<div class="alert alert-info">🔄 Generating code...</div>';
-            const response = await fetch('/api/v1/agents/code', {
+            const response = await fetch('/testmanagement/agents/code', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)

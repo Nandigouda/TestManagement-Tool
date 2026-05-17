@@ -1,7 +1,7 @@
 // API Service
 class ApiService {
     constructor() {
-        this.baseUrl = '/api/v1';
+        this.baseUrl = '/testmanagement';
     }
 
     async get(endpoint) {

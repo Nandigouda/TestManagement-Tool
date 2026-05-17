@@ -1,24 +1,20 @@
-# QA Automation Platform
+# AI Test Management Tool
 
-A comprehensive AI-assisted QA platform for generating, managing, and automating test cases. Built with Spring Boot and powered by Azure OpenAI.
+AI-assisted QA platform for generating, storing, reviewing, exporting, and automating test cases. The app is a Spring Boot web application with a static browser UI, PostgreSQL persistence, Flyway migrations, Azure OpenAI integration, and a Jira/GitHub integration layer for pulling sprint context directly into test generation.
 
-## Overview
-
-The QA Automation Platform is an enterprise-grade test case management system that leverages AI to accelerate test planning and automation. It provides an intuitive web interface for generating test cases from requirements, managing test libraries, and generating automation code for Selenium and Playwright.
-
-**Technology Stack**: Spring Boot 3.2.0 | PostgreSQL | Azure OpenAI | Java 17+ | Maven
-
-## Features
+## Current Capabilities
 
 - Generate structured test cases from requirements text.
-- Generate test cases with selected user guide folders or files as context.
-- Chat with a QA assistant that can generate, regenerate, modify, add, merge, and export conversation test cases.
-- Store generated test cases in PostgreSQL and review them from the Library tab.
-- View metrics for total test cases, applications, modules, tags, and priority distribution.
+- Upload and extract requirement text from PDF, DOCX, TXT, DOC, JPG, PNG, and JPEG files.
+- Select user guide folders as extra workflow/context for generation.
+- Chat with an AI QA assistant for scenario analysis and iterative test case generation.
+- Store generated test cases in PostgreSQL and manage them from the Library tab.
 - Export test cases to CSV or Excel-compatible files.
 - Generate Selenium or Playwright automation code from selected test cases.
-- Push test cases to Jira through the Jira integration endpoint.
-- Extract text from PDF, DOCX, TXT, DOC, JPG, PNG, and JPEG files.
+- Fetch Jira ticket details and auto-fill the Test Cases generation input.
+- Fetch one or more GitHub PRs and auto-fill regression/change context.
+- Store integration credentials encrypted server-side.
+- Persist integration audit logs and integration cache records in PostgreSQL.
 
 ## Tech Stack
 
@@ -27,149 +23,185 @@ The QA Automation Platform is an enterprise-grade test case management system th
 | Backend | Spring Boot 3.2.0 |
 | Java | Java 17+ |
 | Build | Maven 3.9.6 |
-| Database | PostgreSQL 12+ |
+| Database | PostgreSQL |
 | Migrations | Flyway |
 | ORM | Spring Data JPA / Hibernate |
-| AI | Azure OpenAI (with OpenAI fallback) |
+| AI | Azure OpenAI, with OpenAI fallback configuration |
+| Frontend | HTML, CSS, vanilla JavaScript |
 | Document Processing | Apache PDFBox, Apache POI |
-| Frontend | HTML5, CSS3, Vanilla JavaScript |
-| Vector Search | pgvector (optional)
+| Search/Embeddings | pgvector-backed tables where available |
 
 ## Prerequisites
 
-- **Java 17+** (Java 21 recommended)
-- **PostgreSQL** 12+ running locally or accessible from your environment
-- **Azure OpenAI** API key or **OpenAI** API key for AI features
-- **Maven 3.9.6+** (included in `tools/apache-maven-3.9.6` or use local installation)
+- Java 17 or later
+- PostgreSQL 12 or later
+- Azure OpenAI credentials for AI generation, or an OpenAI API key if using fallback paths
+- Maven 3.9.6 or the bundled Maven at `tools/apache-maven-3.9.6`
 
 ## Configuration
 
-### Environment Variables
-
-Create a `.env` file in the project root:
+Create a `.env` file in the project root. You can start from `.env.example`.
 
 ```env
-# Database
 DB_HOST=localhost
 DB_PORT=5432
 DB_NAME=qa_automation_db
 DB_USER=postgres
-DB_PASSWORD=your_secure_password
+DB_PASSWORD=your_postgres_password
 
-# AI Configuration - Azure OpenAI
 AZURE_OPENAI_ENABLED=true
-AZURE_OPENAI_API_KEY=your-api-key
+AZURE_OPENAI_API_KEY=your_azure_openai_key
 AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com
 AZURE_OPENAI_DEPLOYMENT_GPT4=gpt4-turbo
 AZURE_OPENAI_DEPLOYMENT_EMBEDDING=text-embedding-3-small
 AZURE_OPENAI_API_VERSION=2024-02-15-preview
 
-# OR OpenAI (Fallback)
-OPENAI_API_KEY=sk-your-key
+OPENAI_API_KEY=sk-your-openai-key
 
-# Jira Integration (Optional)
-JIRA_BASE_URL=https://your-domain.atlassian.net
-JIRA_API_TOKEN=your-token
-
-# Server
-SERVER_PORT=8080
-SERVER_SERVLET_CONTEXT_PATH=/api/v1
+# Used to encrypt integration tokens stored in PostgreSQL.
+# Use a 16, 24, or 32 character value in real environments.
+ENCRYPTION_SECRET_KEY=change-this-32-character-secret
 ```
 
-### Application Configuration
+The application default server settings are in `src/main/resources/application.yml`:
 
-Default settings in `src/main/resources/application.yml`:
-- Server Port: `8080`
-- Context Path: `/api/v1`
-- Upload Limit: `50MB`
-- Temp Directory: `./temp-files`
-- Database Migrations: `src/main/resources/db/migration/`
+- Port: `8081`
+- Context path: `/testmanagement`
+- Login page: `http://localhost:8081/testmanagement/login.html`
+- Dashboard: `http://localhost:8081/testmanagement/index.html`
+- Integration settings page: `http://localhost:8081/testmanagement/integrations/settings`
 
-## Build & Run
+## Database Setup
 
-### Setup Database
+Create the database before first run:
 
-```bash
-# Create database (if not exists)
-createdb qa_automation_db
-
-# Or use psql
+```powershell
 psql -U postgres -c "CREATE DATABASE qa_automation_db;"
 ```
 
-### Build Application
+Flyway runs automatically on startup and creates the application tables, including:
 
-```bash
-# Using Maven
+- `users`
+- `test_cases`
+- `test_case_libraries`
+- `conversations`
+- `integration_credentials`
+- `integration_audit_logs`
+- `integration_cache_entries`
+
+The seed migration creates an initial admin user:
+
+```text
+username: admin
+password: admin123
+```
+
+Change this immediately for any shared or non-local environment.
+
+## Build
+
+Using bundled Maven on Windows:
+
+```powershell
+.\tools\apache-maven-3.9.6\bin\mvn.cmd clean package -DskipTests
+```
+
+Compile only:
+
+```powershell
+.\tools\apache-maven-3.9.6\bin\mvn.cmd -DskipTests compile
+```
+
+Using a locally installed Maven:
+
+```powershell
 mvn clean package -DskipTests
-
-# Or with included Maven
-./tools/apache-maven-3.9.6/bin/mvn clean package -DskipTests
 ```
 
-### Run Application
+## Run
 
-```bash
-# From JAR
-java -jar target/qa-automation-platform-1.0.0-SNAPSHOT.jar
+With the helper script:
 
-# Or using Maven
-mvn spring-boot:run
-
-# Or with included Maven
-./tools/apache-maven-3.9.6/bin/mvn spring-boot:run
+```powershell
+.\start.ps1
 ```
 
-### Access Application
+Or with Maven:
 
-Once running, open your browser:
-```
-http://localhost:8080/api/v1
+```powershell
+.\tools\apache-maven-3.9.6\bin\mvn.cmd spring-boot:run
 ```
 
-Health check:
-```bash
-curl http://localhost:8080/api/v1/health/check
+Or from the packaged jar:
+
+```powershell
+java -jar target\ai-testmanagement-tool-1.0.0.jar
+```
+
+Open:
+
+```text
+http://localhost:8081/testmanagement/login.html
 ```
 
 ## Main Workflows
 
 ### Generate Test Cases
 
-1. Open `Test Cases`.
+1. Log in and open `Test Cases`.
 2. Use the `Generate` tab.
-3. Enter requirements text or upload a supported file.
+3. Enter requirements manually, upload a file, fetch a Jira ticket, or fetch GitHub PR context.
 4. Optionally select user guide folders.
-5. Click `Generate`.
-6. Review results in the generated list or the `Library` tab.
+5. Click `Generate Test Cases`.
+6. Review results and manage saved cases in the `Library` tab.
 
-### Use Chat
+### Fetch Jira Context
+
+1. Configure Jira credentials in `Jira Integration` or `/integrations/settings`.
+2. In `Test Cases > Generate`, enter `PROJ-123` or a Jira browse URL.
+3. Click `Fetch`.
+4. The app appends title, description, acceptance criteria, status, assignee, labels, linked issues, and source URL to the requirements input.
+
+### Fetch GitHub PR Context
+
+1. Configure a GitHub token in `/integrations/settings`.
+2. In `Test Cases > Generate`, paste one or more PR URLs or `owner/repo#123` references.
+3. Click `Fetch PR Context`.
+4. The app appends PR metadata, file changes, diff summary, and detected scope categories to the requirements input.
+
+### Chat
 
 1. Open `Chat`.
-2. Send a scenario or attach files.
-3. Select active guides if needed.
-4. Use response actions such as regenerate, modify, add more, or merge.
+2. Ask for QA analysis, test ideas, or changes to generated cases.
+3. Use conversation actions such as regenerate, modify, add more, merge, similar, duplicates, and export.
 
 ### Generate Automation Code
 
-1. Open `Test Cases` > `Library`.
+1. Open `Test Cases > Library`.
 2. Select test cases.
-3. Open code generation.
-4. Choose Selenium or Playwright and the target language.
-5. Review the generated artifact.
+3. Generate Selenium or Playwright code.
+4. Review the generated artifact before using it in a test suite.
 
 ## API Endpoints
 
-All endpoints are under `/api/v1`.
+All endpoints are under `/testmanagement`.
+
+### Authentication
+
+- `POST /auth/login`
+- `POST /auth/signup`
+- `GET /auth/status`
+- `GET /logout`
 
 ### Health
 
-- `GET /health/check`
 - `GET /health`
+- `GET /health/check`
 
 ### Test Cases
 
 - `GET /testcases`
+- `DELETE /testcases`
 - `GET /testcases/{id}`
 - `GET /testcases/filter`
 - `GET /testcases/by-application?name=...`
@@ -185,6 +217,15 @@ All endpoints are under `/api/v1`.
 - `GET /agents/testcases/{testCaseId}`
 - `GET /agents/testcases/guides/folders`
 - `GET /agents/testcases/guides/available`
+- `POST /agents/testcases/library/save`
+- `GET /agents/testcases/library`
+- `GET /agents/testcases/library/{libraryId}`
+- `GET /agents/testcases/library/search`
+- `POST /agents/testcases/library/delete-multiple`
+- `DELETE /agents/testcases/library/{libraryId}`
+- `GET /agents/testcases/library/category/{category}`
+- `GET /agents/testcases/library/public/all`
+- `POST /agents/testcases/library/{libraryId}/use`
 
 ### Chat
 
@@ -212,110 +253,124 @@ All endpoints are under `/api/v1`.
 - `POST /agents/code/from-testcases`
 - `GET /agents/code/{artifactId}`
 
-### Jira
+### Jira and GitHub Integrations
 
-- `POST /integrations/jira/push`
+- `GET /api/integrations/jira/ticket/{ticketIdOrUrl}`
+- `POST /api/integrations/github/pr`
+- `POST /api/integrations/settings`
+- `GET /api/integrations/settings`
+- `DELETE /api/integrations/settings/{tokenType}`
+- `POST /api/integrations/test-connections`
+- `GET /api/integrations/audit-logs?limit=50`
+- `GET /integrations/settings`
+
+GitHub PR request examples:
+
+```json
+{ "url": "https://github.com/owner/repo/pull/123" }
+```
+
+```json
+{ "urls": ["owner/repo#123", "https://github.com/owner/repo/pull/124"] }
+```
+
+```json
+{ "urls": "owner/repo#123\nowner/repo#124" }
+```
 
 ## Project Structure
 
 ```text
 src/main/java/com/qaautomation
-  agents/         AI, extraction, Jira, and code generation agents
-  config/         Spring and Azure OpenAI configuration
-  controller/     Health controller
-  controllers/    REST controllers
-  dto/            API DTOs
-  models/         JPA entities and request/response models
-  repositories/   Spring Data repositories
-  services/       Business services
-  utils/          Utility classes
+  agents/          AI agents and document/user-guide processors
+  cache/           Integration response cache service
+  config/          Spring, security, Azure OpenAI, and HTTP client config
+  controller/      Health controller package
+  controllers/     REST and view controllers
+  dto/             API DTOs
+  models/          JPA entities and request/response models
+  rate_limiting/   Integration API rate limiting
+  repositories/    Spring Data repositories
+  services/        Business services
+  utils/           Utility classes
 
 src/main/resources
   application.properties
   application.yml
-  db/migration/   Flyway SQL migrations
-  static/         Browser UI assets
+  application-integration.properties
+  db/migration/    Flyway migrations
+  static/          Browser UI assets
+  templates/       Thymeleaf templates
 ```
 
-## Notes
+## Integration Notes
 
-- Data is persisted in PostgreSQL (not in-memory)
-- Flyway manages database schema versioning and migrations automatically
-- pgvector extension is optional; functionality works without it
-- Generated test cases should be reviewed before export or automation code generation
-- All sensitive configuration should use environment variables
-- No build scripts or test scripts are committed to the repository
+- Jira and GitHub tokens are submitted to backend settings endpoints and stored encrypted in PostgreSQL.
+- Tokens are not returned by settings APIs; responses mask configured tokens.
+- Audit logs are stored in `integration_audit_logs` and retained by service cleanup logic for 30 days.
+- Integration response cache uses `integration_cache_entries` with a 5-minute TTL.
+- GitHub fetch supports multiple PRs in one request.
+- Large GitHub PRs hide raw patches and return file list plus summary.
+- Sensitive files such as `.env`, credentials, keys, and token files are flagged and their patch content is not returned.
+- The current UI wires GitHub regression context into the Test Case generation flow rather than a separate Regression tab.
+- The cache is database-backed in this codebase, not Redis-backed.
 
 ## Troubleshooting
 
-### Database Issues
-```bash
-# Verify PostgreSQL is running
+### Database
+
+```powershell
 psql -U postgres -c "\l"
-
-# Check database exists
-psql -U postgres -c "SELECT datname FROM pg_database WHERE datname='qa_automation_db';"
-
-# View Flyway migrations
-psql -U postgres -d qa_automation_db -c "SELECT * FROM flyway_schema_history;"
+psql -U postgres -d qa_automation_db -c "SELECT * FROM flyway_schema_history ORDER BY installed_rank;"
 ```
 
-### Application Issues
-```bash
-# Check if app is running
-curl -s http://localhost:8080/api/v1/health/check | jq .
+### Application
 
-# View application logs (if saved)
-tail -f app.log
-
-# Verify port is available
-netstat -tulpn | grep 8080  # Linux/Mac
-netstat -ano | findstr :8080  # Windows
+```powershell
+curl http://localhost:8081/testmanagement/health/check
+netstat -aon | Select-String ":8081"
 ```
 
-### AI/API Issues
-- Verify Azure OpenAI or OpenAI API keys are correct
-- Check API quota and permissions
-- Verify network connectivity to API endpoints
-- Review Spring Boot logs for detailed error messages
+### Build
 
-### Build Issues
-```bash
-# Clean Maven cache
-mvn clean
-
-# Verify Java version
+```powershell
 java -version
-
-# Rebuild from scratch
-mvn clean package -DskipTests
-
-# Skip tests if build fails
-mvn package -DskipTests
+.\tools\apache-maven-3.9.6\bin\mvn.cmd -DskipTests clean compile
 ```
+
+### AI/API
+
+- Verify Azure OpenAI endpoint, deployment names, API key, and API version.
+- Check API quota and network access.
+- Review Spring Boot logs for failed external API requests.
+
+### Jira/GitHub
+
+- Save credentials before fetching Jira or GitHub context.
+- Jira accepts `PROJ-123` or a full `/browse/PROJ-123` URL.
+- GitHub accepts full PR URLs or `owner/repo#number`.
+- Private repositories require a GitHub token with repository read access.
 
 ## Security
 
-⚠️ **Important**: This repository does NOT commit:
-- API keys, credentials, or secrets
+Do not commit:
+
+- `.env`
+- API keys
 - Database passwords
+- Jira, GitHub, or GitLab tokens
 - Private keys or certificates
-- Environment-specific configurations
-- Sensitive configuration files
 
-Use environment variables (see Configuration section) for all sensitive data.
+Use environment variables and server-side integration settings for sensitive values. Change the default seeded admin password before using this outside a local development environment.
 
-## Contributing
+## Verification
 
-1. Create a feature branch from \main\
-2. Implement your changes following existing code patterns
-3. Ensure code compiles: \mvn clean compile\
-4. Test your changes: \mvn test\
-5. Commit with clear, descriptive messages
-6. Push and create a pull request
+The current integration changes compile with:
 
-## License & Repository
+```powershell
+.\tools\apache-maven-3.9.6\bin\mvn.cmd -q -DskipTests compile
+```
 
-**Repository**: https://github.com/Nandigouda/TestManagement-Tool
+## Repository
 
-For issues, questions, or contributions, please open an issue on GitHub.
+Repository: `https://github.com/Nandigouda/TestManagement-Tool`
