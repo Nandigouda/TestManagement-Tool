@@ -8,7 +8,7 @@ Write-Host "  Build & Start with Environment Config" -ForegroundColor Green
 Write-Host "=========================================`n" -ForegroundColor Green
 
 # Set Java home
-$env:JAVA_HOME = "C:\Program Files\Java\jdk-21"
+$env:JAVA_HOME = "C:\Program Files\Java\jdk-17"
 
 # Validate Java installation
 if (!(Test-Path "$env:JAVA_HOME\bin\java.exe")) {
